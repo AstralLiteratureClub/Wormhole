@@ -1,0 +1,48 @@
+# request-time = 30000 millis = 30 sec
+tpa:
+  description: "Allows player to teleport to given player."
+  usage: "/tpa <online player>"
+  aliases: ["tpask"]
+  request-time: 30000
+  incorrect-format: "<red>Incorrect Usage! <gray>/tpa <online player>"
+  unknown-player: "<red>Incorrect Usage! <gray>/tpa <online player>"
+  request-already-sent: "<red>You have already sent a teleport request to <white>%who%</white>"
+  request-sent: "<green>Sent teleport request to <white>%who%</white>!</green>"
+tpaccept:
+  description: "Allows player to accept teleport of given player."
+  usage: "/tpaccept <online player>"
+  aliases: ["tpaccept"]
+  incorrect-format: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
+  unknown-player: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
+  no-request-found: "<red>Could not find any teleport requests from <white>%who%</white>!</green>"
+  request-sent: "<green>Sent teleport request to <white>%who%</white>!</green>"
+tpdeny:
+  description: "Allows player to deny teleport of given player."
+  usage: "/tpa <online player>"
+  aliases: ["tpdeny"]
+  incorrect-format: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
+  unknown-player: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
+  no-request-found: "<red>Could not find any teleport requests from <white>%who%</white>!</green>"
+  request-sent: "<green>Sent teleport request to <white>%who%</white>!</green>"
+tpblock:
+  description: "Allows player to unblock teleport requests of given player."
+  usage: "/tpblock <online player>"
+  aliases: ["tpignore"]
+  incorrect-format: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
+  unknown-player: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
+  no-request-found: "<red>Could not find any teleport requests from <white>%who%</white>!</green>"
+  request-sent: "<green>Sent teleport request to <white>%who%</white>!</green>"
+tpunblock:
+  description: "Allows player to unblock teleport requests of given player."
+  usage: "/tpunblock <online player>"
+  aliases: ["tpunignore"]
+  incorrect-format: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
+  unknown-player: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
+  no-request-found: "<red>Could not find any teleport requests from <white>%who%</white>!</green>"
+  request-sent: "<green>Sent teleport request to <white>%who%</white>!</green>"
+tptoggle:
+  description: "Allows player to teleport to given player."
+  usage: "/tptoggle"
+  aliases: []
+  no-request-found: "<red>Could not find any teleport requests from <white>%who%</white>!</green>"
+  request-sent: "<green>Sent teleport request to <white>%who%</white>!</green>"
