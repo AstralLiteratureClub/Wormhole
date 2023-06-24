@@ -1,5 +1,7 @@
 package me.antritus.minecraft_server.wormhole.commands;
 
+import me.antritus.minecraft_server.astrolminiapi.api.chat.ColorUtils;
+import me.antritus.minecraft_server.wormhole.Main;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -51,7 +53,9 @@ public abstract class CoreCommand extends Command implements TabCompleter {
 		cooldownMessage = miniMessage.deserialize(string);
 	}
 
+	private String consoleMsg = Main.configuration.getString("settings.player-only-command", "settings.player-only-command");
 	public void playerOnly() {
+		Bukkit.getConsoleSender().sendMessage(ColorUtils.translateComp(consoleMsg));
 	}
 
 	protected String build(int pos, String[] args){

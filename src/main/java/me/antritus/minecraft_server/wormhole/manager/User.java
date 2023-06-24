@@ -33,12 +33,17 @@ public class User {
 	public @Nullable TeleportRequest getRequest(@NotNull Player player){
 		return requests.get(player.getUniqueId());
 	}
-	public void teleportRequest(@NotNull Player player){
+	public TeleportRequest teleportRequest(@NotNull Player player){
 		name = player.getName();
 		long time = Main.TPA_TIME+System.currentTimeMillis();
 		TeleportRequest request = new TeleportRequest(uniqueId, player.getUniqueId(), time);
 		this.requests.put(player.getUniqueId(), request);
+		return request;
 	}
+	public void receiveRequest(TeleportRequest request) {
+		others.put(request.getWhoRequested(), request);
+	}
+
 	public void teleport(@NotNull TeleportRequest request){
 		Player player = Bukkit.getPlayer(request.getWhoRequested());
 		if (player == null){
@@ -76,13 +81,13 @@ public class User {
 	}
 	public void removeOther(List<TeleportRequest> others){
 		for (TeleportRequest request : others) {
-			this.others.remove(request.getRequested());
+			this.others.remove(request.getWhoRequested());
 		}
 	}
 	public void removeRequest(TeleportRequest request){
 		this.requests.remove(request.getRequested());
 	}
 	public void removeOther(TeleportRequest other){
-		this.others.remove(other.getRequested());
+		this.others.remove(other.getWhoRequested());
 	}
 }

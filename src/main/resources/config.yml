@@ -3,6 +3,7 @@ settings:
   request-time: 30000
   teleport-time: 3000
   cancel-on-teleport-movement: true
+  player-only-command: "<red>Only players can use this command!";
 teleport-accepted:
   teleport-every-second:
     enabled: true
@@ -24,7 +25,9 @@ commands:
     incorrect-format: "<red>Incorrect Usage! <gray>/tpa <online player>"
     unknown-player: "<red>Incorrect Usage! <gray>/tpa <online player>"
     request-already-sent: "<red>You have already sent a teleport request to <white>%who%</white>."
-    request-sent: "<green>Sent teleport request to <white>%who%</white>!</green>"
+    blocked: "<red><white>%who%</white> has blocked you. You cannot send requests to them.</red>"
+    sent-sender: "<green>Sent teleport request to <white>%who%</white>!</green>"
+    sent-requested: "<green>You received teleport request from <white>%who%</white>! <click:run_command:/tpaccept %who%><green><bold>ACCEPT</bold></click> <click:run_command:/tpdeny %who%><red><bold>DENY</bold></click></green>"
   tpaccept:
     cooldown: 0
     description: "Allows player to accept teleport of given player."
@@ -33,7 +36,8 @@ commands:
     incorrect-format: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
     unknown-player: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
     no-request-found: "<red>Could not find any teleport requests from <white>%who%</white>!</green>"
-    request-sent: "<green>Accepted teleport request of <white>%who%</white>!</green>"
+    accepted-sender: "<green>Your teleport request to <white>%who%</white> has been ACCEPTED!</green>"
+    accepted-requested: "<green>Accepted teleport request of <white>%who%</white>!</green>"
   tpdeny:
     cooldown: 0
     description: "Allows player to deny teleport of given player."
@@ -42,7 +46,8 @@ commands:
     incorrect-format: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
     unknown-player: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
     no-request-found: "<red>Could not find any teleport requests from <white>%who%</white>!</green>"
-    request-sent: "<green>Denied teleport request of <white>%who%</white>!</green>"
+    denied-sender: "<red>Your teleport request to <white>%who%</white> has been DENIED!</red>"
+    denied-requested: "<green>You denied teleport request of <white>%who%</white>!</green>"
   tpblock:
     cooldown: 0
     description: "Allows player to unblock teleport requests of given player."
@@ -51,7 +56,8 @@ commands:
     incorrect-format: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
     unknown-player: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
     no-request-found: "<red>Could not find any teleport requests from <white>%who%</white>!</green>"
-    request-sent: "<green>Blocked <white>%who%</white> from sending teleports to you!</green>"
+    blocked-sender: "<green>Blocked <white>%who%</white> from sending teleports to you!</green>"
+    blocked-user: "<red>You can no longer send teleport requests to <white>%who%</white>!</red>"
   tpunblock:
     cooldown: 0
     description: "Allows player to unblock teleport requests of given player."
@@ -61,10 +67,13 @@ commands:
     unknown-player: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
     no-request-found: "<red>Could not find any teleport requests from <white>%who%</white>!</green>"
     request-sent: "<green>Unblocked <white>%who%</white> from sending teleports to you!</green>"
+    unblocked-sender: "<green>Unblocked <white>%who%</white> from sending teleports to you!</green>"
+    unblocked-user: "<red>You can now send teleport requests to <white>%who%</white>!</red>"
   tptoggle:
     cooldown: 0
     description: "Allows player toggle between receiving and not receiving ."
     usage: "/tptoggle"
     aliases: []
     no-request-found: "<red>Could not find any teleport requests from <white>%who%</white>!</green>"
-    request-sent: "<green>Sent teleport request to <white>%who%</white>!</green>"
+    toggled-on: "<red>You will no longer receive teleport requests.</red>"
+    toggled-off: "<green>You will now receive teleport requests.</green>"
