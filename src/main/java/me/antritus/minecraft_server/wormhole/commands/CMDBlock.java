@@ -17,7 +17,7 @@ public class CMDBlock extends CoreCommand{
 		super("Tpdeny");
 		setDescription(Main.configuration.getString("tpblock.description", "Allows player to block teleport requests of given player."));
 		setUsage(Main.configuration.getString("tpblock.usage", "/tpdeny <online player>"));
-		setAliases(Main.configuration.getString("tpblock.aliases", "tpblock"));
+		setAliases(Main.configuration.getStringList("tpblock.aliases"));
 		this.main = main;
 	}
 	@Override
