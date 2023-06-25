@@ -1,7 +1,9 @@
 package me.antritus.minecraft_server.wormhole.commands;
 
-import me.antritus.minecraft_server.astrolminiapi.api.chat.ColorUtils;
-import me.antritus.minecraft_server.wormhole.Main;
+import me.antritus.astrolapi.annotations.NotNull;
+import me.antritus.astrolapi.annotations.Nullable;
+import me.antritus.astrolapi.minecraft.ColorUtils;
+import me.antritus.minecraft_server.wormhole.Wormhole;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -11,12 +13,15 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @since 1.0.0-snapshot
+ * @author antritus
+ */
 public abstract class CoreCommand extends Command implements TabCompleter {
 	public static void registerCommand(JavaPlugin plugin, String label, CoreCommand command) {
 		try {
@@ -53,7 +58,7 @@ public abstract class CoreCommand extends Command implements TabCompleter {
 		cooldownMessage = miniMessage.deserialize(string);
 	}
 
-	private String consoleMsg = Main.configuration.getString("settings.player-only-command", "settings.player-only-command");
+	private String consoleMsg = Wormhole.configuration.getString("settings.player-only-command", "settings.player-only-command");
 	public void playerOnly() {
 		Bukkit.getConsoleSender().sendMessage(ColorUtils.translateComp(consoleMsg));
 	}

@@ -1,22 +1,25 @@
 package me.antritus.minecraft_server.wormhole.commands;
 
-import me.antritus.minecraft_server.wormhole.Main;
+import me.antritus.astrolapi.annotations.NotNull;
+import me.antritus.astrolapi.annotations.Nullable;
+
+import me.antritus.minecraft_server.wormhole.Wormhole;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+
 
 import java.util.List;
 
+/**
+ * @since 1.0.0-snapshot
+ * @author antritus, lunarate
+ */
 public class CMDUnblock extends CoreCommand {
-
-	private final Main main;
-
-	protected CMDUnblock(Main main){
+	protected CMDUnblock(Wormhole main){
 		super("tpdeny");
-		setDescription(Main.configuration.getString("tpunblock.description", "Allows player to unblock teleport requests of given player."));
-		setUsage(Main.configuration.getString("tpunblock.usage", "/tpunblock <online player>"));
-		setAliases(Main.configuration.getString("tpunblock.aliases", "tpunblock"));
+		setDescription(Wormhole.configuration.getString("commands.tpunblock.description", "Allows player to unblock teleport requests of given player."));
+		setUsage(Wormhole.configuration.getString("commands.tpunblock.usage", "/tpunblock <online player>"));
+		setAliases(Wormhole.configuration.getStringList("commands.tpunblock.aliases"));
 
 	}
 

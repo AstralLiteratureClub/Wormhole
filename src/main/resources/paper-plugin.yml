@@ -1,0 +1,10 @@
+name: Wormhole
+version: '1.0.0'
+main: me.antritus.minecraft_server.wormhole.Wormhole
+description: Teleport plugin made for requesting and accepting teleports.
+api-version: '1.20'
+bootstrapper: me.antritus.minecraft_server.wormhole.WormholeBoostrap
+loader: me.antritus.minecraft_server.wormhole.WormholeLoader
+authors:
+  - Antritus
+  - Lunarate

@@ -1,22 +1,24 @@
 package me.antritus.minecraft_server.wormhole.commands;
 
-import me.antritus.minecraft_server.wormhole.Main;
+import me.antritus.minecraft_server.wormhole.Wormhole;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import me.antritus.astrolapi.annotations.NotNull;
+import me.antritus.astrolapi.annotations.Nullable;
 
 import java.util.List;
 
+/**
+ * @since 1.0.0-snapshot
+ * @author antritus, lunarate
+ */
 public class CMDToggle extends CoreCommand{
-	private final Main main;
 
-	protected CMDToggle(Main main){
+	protected CMDToggle(){
 		super("tptoggle");
-		this.main = main;
-		setDescription(Main.configuration.getString("tptoggle.description", "Allows player toggle between receiving and not receiving."));
-		setUsage(Main.configuration.getString("tptoggle.usage", "/tptoggle"));
-
+		setDescription(Wormhole.configuration.getString("commands.tptoggle.description", "Allows player toggle between receiving and not receiving."));
+		setUsage(Wormhole.configuration.getString("commands.tptoggle.usage", "/tptoggle"));
+		setAliases(Wormhole.configuration.getStringList("commands.tptoggle.aliases"));
 	}
 
 	@Override

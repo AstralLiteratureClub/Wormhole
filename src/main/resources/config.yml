@@ -1,4 +1,4 @@
-# request-time = 30000 millis = 30 sec
+# request-time = 1000 millis = 1 sec
 settings:
   request-time: 30000
   teleport-time: 3000
@@ -24,8 +24,8 @@ commands:
     aliases: ["tpask"]
     incorrect-format: "<red>Incorrect Usage! <gray>/tpa <online player>"
     unknown-player: "<red>Incorrect Usage! <gray>/tpa <online player>"
-    request-already-sent: "<red>You have already sent a teleport request to <white>%who%</white>."
     blocked: "<red><white>%who%</white> has blocked you. You cannot send requests to them.</red>"
+    request-already-sent: "<red>You have already sent a teleport request to <white>%who%</white>."
     sent-sender: "<green>Sent teleport request to <white>%who%</white>!</green>"
     sent-requested: "<green>You received teleport request from <white>%who%</white>! <click:run_command:/tpaccept %who%><green><bold>ACCEPT</bold></click> <click:run_command:/tpdeny %who%><red><bold>DENY</bold></click></green>"
   tpaccept:

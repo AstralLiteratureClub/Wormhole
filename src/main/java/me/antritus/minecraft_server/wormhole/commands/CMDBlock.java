@@ -1,24 +1,23 @@
 package me.antritus.minecraft_server.wormhole.commands;
 
-import me.antritus.minecraft_server.wormhole.Main;
-import net.luckperms.api.model.user.UserManager;
+import me.antritus.astrolapi.annotations.NotNull;
+import me.antritus.astrolapi.annotations.Nullable;
+import me.antritus.minecraft_server.wormhole.Wormhole;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+/**
+ * @since 1.0.0-snapshot
+ * @author antritus, lunarate
+ */
 public class CMDBlock extends CoreCommand{
-	private final Main main;
-
-	protected CMDBlock(Main main){
+	protected CMDBlock(Wormhole main){
 		super("Tpdeny");
-		setDescription(Main.configuration.getString("tpblock.description", "Allows player to block teleport requests of given player."));
-		setUsage(Main.configuration.getString("tpblock.usage", "/tpdeny <online player>"));
-		setAliases(Main.configuration.getStringList("tpblock.aliases"));
-		this.main = main;
+		setDescription(Wormhole.configuration.getString("commands.tpblock.description", "Allows player to block teleport requests of given player."));
+		setUsage(Wormhole.configuration.getString("commands.tpblock.usage", "/tpdeny <online player>"));
+		setAliases(Wormhole.configuration.getStringList("commands.tpblock.aliases"));
 	}
 	@Override
 	public boolean execute(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] args){

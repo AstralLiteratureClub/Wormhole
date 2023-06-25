@@ -1,6 +1,6 @@
 package me.antritus.minecraft_server.wormhole.events;
 
-import me.antritus.minecraft_server.wormhole.Main;
+import me.antritus.minecraft_server.wormhole.Wormhole;
 import me.antritus.minecraft_server.wormhole.events.request.*;
 import me.antritus.minecraft_server.wormhole.manager.TeleportRequest;
 import org.bukkit.Bukkit;
@@ -14,11 +14,11 @@ public class TpRequestEventFactory {
 	public static void trigger(TpRequestEvent event){
 		Bukkit.getPluginManager().callEvent(event);
 	}
-	public static TpRequestPlayerPrepareParseEvent createSendPrepareEvent(Player player, Player requested){
-		return new TpRequestPlayerPrepareParseEvent(player, requested);
+	public static TpRequestPlayerPrepareParseEvent createSendPrepareEvent(String name, Player player, Player requested){
+		return new TpRequestPlayerPrepareParseEvent(name, player, requested);
 	}
 	public static TpRequestSendEvent createSendEvent(Player player, Player requested){
-		return new TpRequestSendEvent(player, requested, Main.TPA_TIME);
+		return new TpRequestSendEvent(player, requested, Wormhole.TPA_TIME);
 	}
 	public static TpRequestAcceptEvent createAcceptEvent(Player player, Player requested, TeleportRequest request){
 		return new TpRequestAcceptEvent(player, requested, request);

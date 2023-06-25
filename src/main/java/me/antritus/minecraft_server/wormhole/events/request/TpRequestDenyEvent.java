@@ -3,7 +3,8 @@ package me.antritus.minecraft_server.wormhole.events.request;
 import me.antritus.minecraft_server.wormhole.manager.TeleportRequest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.NotNull;
+import me.antritus.astrolapi.annotations.NotNull;
+import me.antritus.astrolapi.annotations.Nullable;
 
 /**
  * This event is fired when deny is about to happen

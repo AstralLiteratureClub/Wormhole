@@ -1,6 +1,6 @@
 package me.antritus.minecraft_server.wormhole.manager;
 
-import me.antritus.minecraft_server.wormhole.Main;
+import me.antritus.minecraft_server.wormhole.Wormhole;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,7 +8,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.Nullable;
+import me.antritus.astrolapi.annotations.NotNull;
+import me.antritus.astrolapi.annotations.Nullable;
 
 import java.util.*;
 
@@ -18,9 +19,9 @@ import java.util.*;
  */
 public class TeleportManager {
 	private final Map<UUID, User> users = new HashMap<>();
-	private final Main main;
+	private final Wormhole main;
 	private BukkitTask task;
-	public TeleportManager(Main main) {
+	public TeleportManager(Wormhole main) {
 		this.main = main;
 	}
 	public void onEnable(){
@@ -45,13 +46,13 @@ public class TeleportManager {
 													if (request.teleportEnd < 0){
 														requestClearance.add(request);
 													} else {
-														if (request.lastSentMessage-System.currentTimeMillis() < 0 && Main.configuration.getBoolean("teleport-accepted.teleport-every-second.enabled", false)){
-															Main.sendMessage(Bukkit.getPlayer(request.getWhoRequested()), Bukkit.getPlayer(request.getRequested()), "teleport-accepted.teleport-every-second.enabled");
+														if (request.lastSentMessage-System.currentTimeMillis() < 0 && Wormhole.configuration.getBoolean("teleport-accepted.teleport-every-second.enabled", false)){
+															Wormhole.sendMessage(Bukkit.getPlayer(request.getWhoRequested()), Bukkit.getPlayer(request.getRequested()), "teleport-accepted.teleport-every-second.enabled");
 															request.lastSentMessage = System.currentTimeMillis()+500;
 														}
 													}
 													if (now < request.getTimeEnd() && request.teleportEnd < 0){
-														Main.sendMessage(Bukkit.getPlayer(request.getWhoRequested()), Bukkit.getPlayer(request.getRequested()), "request-canceled.time-ran-out-sender");
+														Wormhole.sendMessage(Bukkit.getPlayer(request.getWhoRequested()), Bukkit.getPlayer(request.getRequested()), "request-canceled.time-ran-out-sender");
 														requestClearance.add(request);
 													}
 												}
@@ -62,7 +63,7 @@ public class TeleportManager {
 								user.others().forEach(
 										(request) -> {
 											if (now < request.getTimeEnd() && request.teleportEnd < 0){
-												Main.sendMessage(Bukkit.getPlayer(request.getWhoRequested()), Bukkit.getPlayer(request.getRequested()), "request-canceled.time-ran-out-requested");
+												Wormhole.sendMessage(Bukkit.getPlayer(request.getWhoRequested()), Bukkit.getPlayer(request.getRequested()), "request-canceled.time-ran-out-requested");
 												requestClearance.add(request);
 											}
 										}

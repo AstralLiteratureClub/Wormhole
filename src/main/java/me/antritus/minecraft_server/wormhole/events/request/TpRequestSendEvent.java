@@ -3,7 +3,8 @@ package me.antritus.minecraft_server.wormhole.events.request;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
-import org.jetbrains.annotations.NotNull;
+import me.antritus.astrolapi.annotations.NotNull;
+import me.antritus.astrolapi.annotations.Nullable;
 
 /**
  * This event is right before sending teleport request to requested

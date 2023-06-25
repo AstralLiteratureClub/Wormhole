@@ -1,23 +1,24 @@
 package me.antritus.minecraft_server.wormhole.commands;
 
-import me.antritus.minecraft_server.wormhole.Main;
-import net.luckperms.api.model.user.UserManager;
+import me.antritus.astrolapi.annotations.NotNull;
+import me.antritus.astrolapi.annotations.Nullable;
+import me.antritus.minecraft_server.wormhole.Wormhole;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+/**
+ * @since 1.0.0-snapshot
+ * @author antritus, lunarate
+ */
 public class CMDAccept extends CoreCommand{
 
-	private final Main main;
-	protected CMDAccept(Main main) {
+	protected CMDAccept() {
 		super("tpaccept");
-		this.main = main;
-		setDescription(Main.configuration.getString("tpaccept.description", "Allows players to accept teleport of given player."));
-		setUsage(Main.configuration.getString("tpaccept.usage", "/tpaccept <online player>"));
-		setAliases(Main.configuration.getStringList("tpaccept.aliases"));
+		setDescription(Wormhole.configuration.getString("commands.tpaccept.description", "Allows players to accept teleport of given player."));
+		setUsage(Wormhole.configuration.getString("commands.tpaccept.usage", "/tpaccept <online player>"));
+		setAliases(Wormhole.configuration.getStringList("commands.tpaccept.aliases"));
 	}
 
 
