@@ -1,9 +1,10 @@
 # request-time = 1000 millis = 1 sec
 settings:
   request-time: 30000
-  teleport-time: 3000
+  teleport-time: 0
   cancel-on-teleport-movement: true
-  player-only-command: "<red>Only players can use this command!";
+  player-only-command: "<red>Only players can use this command!"
+  no-player-tab-completion: "< No Available Players >"
 teleport-accepted:
   teleport-every-second:
     enabled: true
@@ -24,10 +25,11 @@ commands:
     aliases: ["tpask"]
     incorrect-format: "<red>Incorrect Usage! <gray>/tpa <online player>"
     unknown-player: "<red>Incorrect Usage! <gray>/tpa <online player>"
-    blocked: "<red><white>%who%</white> has blocked you. You cannot send requests to them.</red>"
+    request-self: "<red>Incorrect Usage! <gray>/tpa <online player>"
+    blocked: "<red><white>%who%</white> has blocked you. You are not able to send teleport requests to them.</red>"
     request-already-sent: "<red>You have already sent a teleport request to <white>%who%</white>."
-    sent-sender: "<green>Sent teleport request to <white>%who%</white>!</green>"
-    sent-requested: "<green>You received teleport request from <white>%who%</white>! <click:run_command:/tpaccept %who%><green><bold>ACCEPT</bold></click> <click:run_command:/tpdeny %who%><red><bold>DENY</bold></click></green>"
+    sent-sender: "<green>You have sent a teleport request to <white>%who%</white>!</green>"
+    sent-requested: "<green>You have received a teleport request from <white>%who%</white>! <click:run_command:/tpaccept %who%><green><bold>ACCEPT</bold></click> <click:run_command:/tpdeny %who%><red><bold>DENY</bold></click></green>"
   tpaccept:
     cooldown: 0
     description: "Allows player to accept teleport of given player."
@@ -35,7 +37,8 @@ commands:
     aliases: ["tpaccept"]
     incorrect-format: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
     unknown-player: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
-    no-request-found: "<red>Could not find any teleport requests from <white>%who%</white>!</green>"
+    request-self: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
+    no-request-found: "<red>Could not find any teleport requests from <white>%who%</white>!</red>"
     accepted-sender: "<green>Your teleport request to <white>%who%</white> has been ACCEPTED!</green>"
     accepted-requested: "<green>Accepted teleport request of <white>%who%</white>!</green>"
   tpdeny:
@@ -77,3 +80,18 @@ commands:
     no-request-found: "<red>Could not find any teleport requests from <white>%who%</white>!</green>"
     toggled-on: "<red>You will no longer receive teleport requests.</red>"
     toggled-off: "<green>You will now receive teleport requests.</green>"
+  tprequests:
+    cooldown: 0
+    description: "Allows player to see all their requests."
+    usage: "/tprequest"
+    aliases: []
+    unknown-player: "<red>Incorrect Usage! <gray>/tprequests [online player]"
+    format-self: "<green>Sent requests: <white>%sent%</white>\nReceived requests: <white>%received%</white>"
+    format-other: "<green><white>%who% sent requests: <white>%sent%</white>\n<green><white>%who% received requests: <white>%received%</white>"
+  tpreload:
+    cooldown: 0
+    description: "Allows reloading of the plugin configuration."
+    usage: "/tprequest"
+    aliases: []
+    reloading: "<red>Reloading..."
+    reloaded: "<red>reloaded..."

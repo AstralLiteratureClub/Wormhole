@@ -1,10 +1,9 @@
 package me.antritus.minecraft_server.wormhole.events.request;
 
+import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
-import me.antritus.astrolapi.annotations.NotNull;
-import me.antritus.astrolapi.annotations.Nullable;
 
 
 /**

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Wormhole:jar">
+    <output-path>$USER_HOME$/AppData/Roaming/.feather/player-server/servers/d5e19864-c3d0-48bb-bb4f-abdb2053de6d/plugins</output-path>
+    <root id="archive" name="Wormhole.jar">
+      <element id="module-output" name="Wormhole" />
+    </root>
+  </artifact>
+</component>

@@ -26,53 +26,6 @@
                     <target>17</target>
                 </configuration>
             </plugin>
-            <!-- Maven Shade Plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <relocations>
-                                <relocation>
-                                    <pattern>me.antritus</pattern>
-                                    <shadedPattern>me.antritus.minecraft_server.wormhole.astrolminiapi</shadedPattern>
-                                </relocation>
-                            </relocations>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                        </configuration>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>me.antritus</groupId>
-                        <artifactId>AstrolMiniAPI</artifactId>
-                        <version>1.0.0</version>
-                        <scope>runtime</scope>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>org.bukkit</groupId>
-                                <artifactId>Bukkit</artifactId>
-                            </exclusion>
-                        </exclusions>
-                    </dependency>
-                    <!-- Maven Shade Plugin dependencies if needed -->
-                </dependencies>
-            </plugin>
         </plugins>
     </build>
 
@@ -96,22 +49,16 @@
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>me.antritus</groupId>
-            <artifactId>AstrolMiniAPI</artifactId>
-            <version>1.0.0</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bukkit</groupId>
-                    <artifactId>Bukkit</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
             <version>1.20.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jetbrains</groupId>
+                    <artifactId>annotations</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>

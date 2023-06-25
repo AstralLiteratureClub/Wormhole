@@ -1,20 +1,21 @@
 package me.antritus.minecraft_server.wormhole.commands;
 
-import me.antritus.astrolapi.annotations.NotNull;
-import me.antritus.astrolapi.annotations.Nullable;
-import me.antritus.astrolapi.minecraft.ColorUtils;
+
 import me.antritus.minecraft_server.wormhole.Wormhole;
+import me.antritus.minecraft_server.wormhole.astrolminiapi.ColorUtils;
+import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandMap;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
+import org.bukkit.command.defaults.BukkitCommand;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +23,7 @@ import java.util.List;
  * @since 1.0.0-snapshot
  * @author antritus
  */
-public abstract class CoreCommand extends Command implements TabCompleter {
+public abstract class CoreCommand extends BukkitCommand {
 	public static void registerCommand(JavaPlugin plugin, String label, CoreCommand command) {
 		try {
 			Field commandMapField = Bukkit.getServer().getClass().getDeclaredField("commandMap");
@@ -31,8 +32,7 @@ public abstract class CoreCommand extends Command implements TabCompleter {
 			commandMap.register(label, plugin.getName(), command);
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			e.printStackTrace();
-		}
-	}
+		}	}
 	private static List<CoreCommand> commands = new ArrayList<>();
 	protected Integer cooldown = null;
 	protected Component cooldownMessage = null;

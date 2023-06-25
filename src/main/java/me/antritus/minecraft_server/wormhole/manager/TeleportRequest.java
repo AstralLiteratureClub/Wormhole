@@ -3,6 +3,7 @@ package me.antritus.minecraft_server.wormhole.manager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -26,7 +27,7 @@ public class TeleportRequest {
 		this.timeEnd = end;
 	}
 	public boolean isValid(){
-		return (Bukkit.getPlayer(whoRequested) != null && Bukkit.getPlayer(requested) != null && timeEnd > System.currentTimeMillis());
+		return (timeEnd > System.currentTimeMillis());
 	}
 
 	public UUID getWhoRequested() {
@@ -39,5 +40,23 @@ public class TeleportRequest {
 
 	public long getTimeEnd() {
 		return timeEnd;
+	}
+
+	@Override
+	public boolean equals(Object obj){
+		if (obj instanceof TeleportRequest request){
+			return (request.getWhoRequested().equals(getWhoRequested()) && request.getRequested().equals(getRequested()) && request.getTimeEnd()==getTimeEnd() && request.teleportEnd==teleportEnd);
+		}
+		return false;
+	}
+
+	@Override
+	public String toString(){
+		return "Wormhole{\"sender\":\""+Bukkit.getPlayer(getWhoRequested()).getName()+"\",\"requested\":\""+Bukkit.getPlayer(requested)+"\", \"end\":"+timeEnd+"}";
+	}
+
+	public enum Type {
+		REQUESTED,
+		SENDER,
 	}
 }
