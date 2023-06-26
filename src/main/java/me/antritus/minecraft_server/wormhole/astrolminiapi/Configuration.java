@@ -9,7 +9,7 @@ import java.util.Objects;
 
 /**
  * @since 1.0.0-snapshot
- * @author antritus, lunarate
+ * @author antritus
  */
 public class Configuration extends YamlConfiguration {
 

@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * @since 1.0.0-snapshot
- * @author antritus, lunarate
+ * @author antritus
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})

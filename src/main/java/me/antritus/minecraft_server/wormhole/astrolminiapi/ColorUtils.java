@@ -10,7 +10,7 @@ import net.md_5.bungee.api.ChatColor;
 
 /**
  * @since 1.0.0-snapshot
- * @author antritus, lunarate
+ * @author antritus
  */
 @SuppressWarnings("ALL")
 public class ColorUtils {
