@@ -3,7 +3,6 @@ package me.antritus.minecraft_server.wormhole.manager;
 import me.antritus.minecraft_server.wormhole.Wormhole;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.Nullable;
-import me.antritus.minecraft_server.wormhole.commands.request.CMDAccept;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -25,6 +24,7 @@ public class User {
 	private final HashMap<UUID, TeleportRequest> others = new HashMap<>();
 	private final UUID uniqueId;
 	public boolean online = false;
+	public boolean acceptingRequests = true;
 	public long lastOnline = 0;
 	public String name;
 
@@ -46,7 +46,7 @@ public class User {
 
 	public TeleportRequest teleportRequest(@NotNull Player player) {
 		name = player.getName();
-		long time = Wormhole.TPA_TIME + System.currentTimeMillis();
+		long time = Wormhole.REQUEST_TIME + System.currentTimeMillis();
 		TeleportRequest request = new TeleportRequest(uniqueId, player.getUniqueId(), time);
 		this.requests.put(player.getUniqueId(), request);
 		return request;

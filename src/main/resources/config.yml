@@ -1,10 +1,15 @@
+# Don't edit
+version: 1.0.0
+debug: false
+
 # request-time = 1000 millis = 1 sec
 settings:
   request-time: 30000
   teleport-time: 0
   cancel-on-teleport-movement: true
+  permission-message: "<red>Unknown command or you do not have permissions to use this.<red>"
   player-only-command: "<red>Only players can use this command!"
-  no-player-tab-completion: "< No Available Players >"
+  no-player-tab-completion: ""
 teleport-accepted:
   teleport-every-second:
     enabled: true
@@ -22,11 +27,12 @@ commands:
     cooldown: 0
     description: "Allows player to teleport to given player."
     usage: "/tpa <online player>"
-    aliases: ["tpask"]
+    aliases: []
     incorrect-format: "<red>Incorrect Usage! <gray>/tpa <online player>"
     unknown-player: "<red>Incorrect Usage! <gray>/tpa <online player>"
     request-self: "<red>Incorrect Usage! <gray>/tpa <online player>"
     blocked: "<red><white>%who%</white> has blocked you. You are not able to send teleport requests to them.</red>"
+    requests-off: "<white>%white%</white><red> has teleport requests toggled off."
     request-already-sent: "<red>You have already sent a teleport request to <white>%who%</white>."
     sent-sender: "<green>You have sent a teleport request to <white>%who%</white>!</green>"
     sent-requested: "<green>You have received a teleport request from <white>%who%</white>! <click:run_command:/tpaccept %who%><green><bold>ACCEPT</bold></click> <click:run_command:/tpdeny %who%><red><bold>DENY</bold></click></green>"
@@ -34,7 +40,7 @@ commands:
     cooldown: 0
     description: "Allows player to accept teleport of given player."
     usage: "/tpaccept <online player>"
-    aliases: ["tpaccept"]
+    aliases: []
     incorrect-format: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
     unknown-player: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
     request-self: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
@@ -45,7 +51,7 @@ commands:
     cooldown: 0
     description: "Allows player to deny teleport of given player."
     usage: "/tpa <online player>"
-    aliases: ["tpdeny"]
+    aliases: []
     incorrect-format: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
     unknown-player: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
     no-request-found: "<red>Could not find any teleport requests from <white>%who%</white>!</green>"
@@ -55,21 +61,18 @@ commands:
     cooldown: 0
     description: "Allows player to unblock teleport requests of given player."
     usage: "/tpblock <online player>"
-    aliases: ["tpignore"]
+    aliases: []
     incorrect-format: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
     unknown-player: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
-    no-request-found: "<red>Could not find any teleport requests from <white>%who%</white>!</green>"
     blocked-sender: "<green>Blocked <white>%who%</white> from sending teleports to you!</green>"
     blocked-user: "<red>You can no longer send teleport requests to <white>%who%</white>!</red>"
   tpunblock:
     cooldown: 0
     description: "Allows player to unblock teleport requests of given player."
     usage: "/tpunblock <online player>"
-    aliases: ["tpunignore"]
+    aliases: []
     incorrect-format: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
     unknown-player: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
-    no-request-found: "<red>Could not find any teleport requests from <white>%who%</white>!</green>"
-    request-sent: "<green>Unblocked <white>%who%</white> from sending teleports to you!</green>"
     unblocked-sender: "<green>Unblocked <white>%who%</white> from sending teleports to you!</green>"
     unblocked-user: "<red>You can now send teleport requests to <white>%who%</white>!</red>"
   tptoggle:
@@ -77,7 +80,6 @@ commands:
     description: "Allows player toggle between receiving and not receiving ."
     usage: "/tptoggle"
     aliases: []
-    no-request-found: "<red>Could not find any teleport requests from <white>%who%</white>!</green>"
     toggled-on: "<red>You will no longer receive teleport requests.</red>"
     toggled-off: "<green>You will now receive teleport requests.</green>"
   tprequests:
@@ -85,6 +87,8 @@ commands:
     description: "Allows player to see all their requests."
     usage: "/tprequest"
     aliases: []
+    no-perms-check: "<red>You do not have enough permissions to check requests of other players!"
+    no-perms-check-others: "<red>You do not have enough permissions to check <white>%who%</white>'s requests!"
     unknown-player: "<red>Incorrect Usage! <gray>/tprequests [online player]"
     format-self: "<green>Sent requests: <white>%sent%</white>\nReceived requests: <white>%received%</white>"
     format-other: "<green><white>%who% sent requests: <white>%sent%</white>\n<green><white>%who% received requests: <white>%received%</white>"

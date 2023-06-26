@@ -2,12 +2,8 @@ package me.antritus.minecraft_server.wormhole.commands.admin;
 
 import me.antritus.minecraft_server.wormhole.Wormhole;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
-import me.antritus.minecraft_server.wormhole.astrolminiapi.Nullable;
 import me.antritus.minecraft_server.wormhole.commands.CoreCommand;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-
-import java.util.List;
 
 public class CMDReload extends CoreCommand {
 	public CMDReload() {
@@ -19,7 +15,9 @@ public class CMDReload extends CoreCommand {
 
 	@Override
 	public boolean execute(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] strings) {
+		sendMessage(commandSender, Wormhole.configuration.getString("commands.tpreload.reloading"));
 		Wormhole.reload();
+		sendMessage(commandSender, Wormhole.configuration.getString("commands.tpreload.reloaded"));
 		return true;
 	}
 }

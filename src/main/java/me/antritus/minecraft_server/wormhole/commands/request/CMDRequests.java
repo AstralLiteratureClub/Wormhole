@@ -3,7 +3,6 @@ package me.antritus.minecraft_server.wormhole.commands.request;
 import me.antritus.minecraft_server.wormhole.Wormhole;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.ColorUtils;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
-import me.antritus.minecraft_server.wormhole.astrolminiapi.Nullable;
 import me.antritus.minecraft_server.wormhole.commands.CoreCommand;
 import me.antritus.minecraft_server.wormhole.events.PlayerTabCompleteRequestEvent;
 import me.antritus.minecraft_server.wormhole.events.TpRequestEventFactory;
@@ -11,7 +10,6 @@ import me.antritus.minecraft_server.wormhole.events.request.TpRequestPlayerPrepa
 import me.antritus.minecraft_server.wormhole.manager.TeleportRequest;
 import me.antritus.minecraft_server.wormhole.manager.User;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -41,7 +39,14 @@ public class CMDRequests extends CoreCommand {
 		if (args.length > 0){
 			other = Bukkit.getPlayer(args[0]);
 			if (other == null){
-				player.sendMessage(ColorUtils.translateComp(Wormhole.configuration.getString("commands.tprequests.unknown-player")));
+				if (!player.hasPermission("wormhole.requests.others")){
+					player.sendMessage(ColorUtils.translateComp(Wormhole.configuration.getString("commands.tprequests.no-perms-check")));
+					return true;
+				}
+				return true;
+			}
+			if (!player.hasPermission("wormhole.requests.others")){
+				Wormhole.sendMessage(player, other, "commands.tprequests.no-perms-check-others");
 				return true;
 			}
 			TpRequestPlayerPrepareParseEvent parseEvent = TpRequestEventFactory.createSendPrepareEvent("tprequests", player, other);
@@ -93,8 +98,11 @@ public class CMDRequests extends CoreCommand {
 	public @NotNull List<String> tabComplete(@NotNull CommandSender commandSender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
 		if (args.length==1) {
 			Player sender = (Player) commandSender;
+			if (!sender.hasPermission("wormhole.requests.others")){
+				return Collections.singletonList("");
+			}
 			List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
-			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent(sender, players);
+			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent("tprequests", sender, players);
 			Bukkit.getServer().getPluginManager().callEvent(e);
 			List<String> finalList = new ArrayList<>();
 			for (Player player : players) {

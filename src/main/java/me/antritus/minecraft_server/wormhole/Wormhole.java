@@ -24,7 +24,9 @@ import java.io.File;
 public class Wormhole extends JavaPlugin {
 	private static Wormhole wormhole;
 	public static boolean DEBUG = true;
-	public static long TPA_TIME = 30000;
+	public static boolean CANCEL_TELEPORT_ON_MOVE = true;
+	public static long REQUEST_TIME = 30000;
+	public static long TELEPORT_TIME;
 	public static Configuration configuration;
 	public static TeleportManager manager;
 
@@ -67,5 +69,10 @@ public class Wormhole extends JavaPlugin {
 		configuration = new Configuration(wormhole, new File(wormhole.getDataFolder(), "config.yml"));
 		manager = new TeleportManager(wormhole);
 		manager.onEnable();
+
+		DEBUG = configuration.getBoolean("debug", false);
+		REQUEST_TIME = configuration.getLong("settings.tpatime", 30000);
+		CANCEL_TELEPORT_ON_MOVE = configuration.getBoolean("settings.cancel-teleport-on-movement", false);
+		TELEPORT_TIME = configuration.getLong("settings.teleport-time", 3000);
 	}
 }

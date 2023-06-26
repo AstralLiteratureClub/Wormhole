@@ -4,16 +4,14 @@ package me.antritus.minecraft_server.wormhole.commands.request;
 import me.antritus.minecraft_server.wormhole.Wormhole;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.ColorUtils;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
-import me.antritus.minecraft_server.wormhole.astrolminiapi.Nullable;
 import me.antritus.minecraft_server.wormhole.commands.CoreCommand;
 import me.antritus.minecraft_server.wormhole.events.PlayerTabCompleteRequestEvent;
 import me.antritus.minecraft_server.wormhole.events.TpRequestEventFactory;
+import me.antritus.minecraft_server.wormhole.events.request.TpRequestAcceptEvent;
 import me.antritus.minecraft_server.wormhole.events.request.TpRequestPlayerPrepareParseEvent;
-import me.antritus.minecraft_server.wormhole.events.request.TpRequestSendEvent;
 import me.antritus.minecraft_server.wormhole.manager.TeleportRequest;
 import me.antritus.minecraft_server.wormhole.manager.User;
 import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -76,7 +74,7 @@ public class CMDAccept extends CoreCommand {
 			return true;
 		}
 		if (requestPlayer.equals(requestSender)){
-			TpRequestSendEvent event = TpRequestEventFactory.createSendEvent(player, sender);
+			TpRequestAcceptEvent event = TpRequestEventFactory.createAcceptEvent(player, sender, requestSender);
 			TpRequestEventFactory.trigger(event);
 			if (event.isCancelled()){
 				return true;
@@ -97,16 +95,25 @@ public class CMDAccept extends CoreCommand {
 		if (args.length==1) {
 			Player sender = (Player) commandSender;
 			List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
-			players.removeIf(player -> Wormhole.manager.getUser(sender).getRequest(player, TeleportRequest.Type.SENDER) != null && Wormhole.manager.getUser(sender).getRequest(player, TeleportRequest.Type.SENDER).isValid());
-			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent(sender, players);
+			players.remove(sender);
+			players.removeIf(player ->
+					Wormhole.manager.getUser(sender).getRequest(player, TeleportRequest.Type.SENDER) == null
+							||
+							(Wormhole.manager.getUser(sender).getRequest(player, TeleportRequest.Type.SENDER) != null
+									&&
+									!Wormhole.manager.getUser(sender).
+											getRequest(player, TeleportRequest.Type.SENDER).isValid()));
+			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent("tpaccept", sender, players);
 			Bukkit.getServer().getPluginManager().callEvent(e);
 			List<String> finalList = new ArrayList<>();
 			for (Player player : players) {
 				finalList.add(player.getName());
 			}
+			if (finalList.isEmpty()){
+				finalList.add(Wormhole.configuration.getString("settings.no-player-tab-completion", "settings.no-player-tab-completion"));
+			}
 			return finalList;
 		}
 		return Collections.singletonList("");
 	}
-
 }

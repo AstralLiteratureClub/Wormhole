@@ -18,7 +18,7 @@ public class TpRequestEventFactory {
 		return new TpRequestPlayerPrepareParseEvent(name, player, requested);
 	}
 	public static TpRequestSendEvent createSendEvent(Player player, Player requested){
-		return new TpRequestSendEvent(player, requested, Wormhole.TPA_TIME);
+		return new TpRequestSendEvent(player, requested, Wormhole.REQUEST_TIME);
 	}
 	public static TpRequestAcceptEvent createAcceptEvent(Player player, Player requested, TeleportRequest request){
 		return new TpRequestAcceptEvent(player, requested, request);

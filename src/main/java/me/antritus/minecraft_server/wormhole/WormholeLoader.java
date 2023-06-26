@@ -4,8 +4,6 @@ import io.papermc.paper.plugin.loader.PluginClasspathBuilder;
 import io.papermc.paper.plugin.loader.PluginLoader;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
 
-import java.nio.file.Path;
-
 @SuppressWarnings("UnstableApiUsage")
 public class WormholeLoader implements PluginLoader {
 	@Override
