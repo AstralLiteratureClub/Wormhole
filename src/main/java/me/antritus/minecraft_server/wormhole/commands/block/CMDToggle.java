@@ -3,7 +3,7 @@ package me.antritus.minecraft_server.wormhole.commands.block;
 import me.antritus.minecraft_server.wormhole.Wormhole;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.ColorUtils;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
-import me.antritus.minecraft_server.wormhole.commands.CoreCommand;
+import me.antritus.minecraft_server.wormhole.astrolminiapi.CoreCommand;
 import me.antritus.minecraft_server.wormhole.manager.User;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -18,9 +18,10 @@ import java.util.List;
 public class CMDToggle extends CoreCommand {
 
 	public CMDToggle() {
-		super("tptoggle");
-		setDescription(Wormhole.configuration.getString("commands.tptoggle.description", "Allows player toggle between receiving and not receiving."));
-		setUsage(Wormhole.configuration.getString("commands.tptoggle.usage", "/tptoggle"));
+		super("tptoggle", Wormhole.configuration.getLong("commands.tptoggle.cooldown", 0));
+		setPermission("wormhole.toggle");
+		setDescription(Wormhole.configuration.getString("commands.tptoggle.description", "commands.tptoggle.description"));
+		setUsage(Wormhole.configuration.getString("commands.tptoggle.usage", "commands.tptoggle.usage"));
 		setAliases(Wormhole.configuration.getStringList("commands.tptoggle.aliases"));
 	}
 
@@ -40,6 +41,7 @@ public class CMDToggle extends CoreCommand {
 		} else {
 			player.sendMessage(ColorUtils.translateComp(Wormhole.configuration.getString("commands.tptoggle.toggled-on", "commands.tptoggle.toggled-on")));
 		}
+		cooldowns.put(player.getUniqueId(), System.currentTimeMillis()+super.cooldown);
 		return true;
 	}
 

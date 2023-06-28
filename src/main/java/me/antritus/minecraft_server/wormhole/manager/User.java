@@ -7,22 +7,19 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @since 1.0.0-snapshot
  * @author antritus
  */
 public class User {
+
 	private final HashMap<String, Boolean> blockedUsers = new HashMap<>();
 	private final HashMap<UUID, TeleportRequest> requests = new HashMap<>();
 	private final HashMap<UUID, TeleportRequest> others = new HashMap<>();
 	private final UUID uniqueId;
+	public TeleportRequest latestRequest = null;
 	public boolean online = false;
 	public boolean acceptingRequests = true;
 	public long lastOnline = 0;
@@ -54,9 +51,20 @@ public class User {
 
 	public void receiveRequest(TeleportRequest request) {
 		others.put(request.getWhoRequested(), request);
+		latestRequest = request;
 	}
 
 	public void teleport(@NotNull TeleportRequest request) {
+		if (Wormhole.TELEPORT_TIME>0){
+			if (request.teleporting==-1){
+				request.teleporting=System.currentTimeMillis()+Wormhole.TELEPORT_TIME;
+				User user = Wormhole.manager.getUser(request.getRequested());
+				user.removeOther(request);
+			}
+			if (System.currentTimeMillis()<request.teleporting){
+				return;
+			}
+		}
 		Player player = Bukkit.getPlayer(request.getWhoRequested());
 		if (player == null) {
 			throw new RuntimeException("Could not teleport null player!");
@@ -65,14 +73,10 @@ public class User {
 		if (requested == null) {
 			throw new RuntimeException("Could not teleport to null player!");
 		}
-		if (request.teleportEnd < 0){
-			this.requests.remove(request.getRequested());
-		}
 		User user = Wormhole.manager.getUser(request.getRequested());
 		user.removeOther(request);
 		player.teleportAsync(requested.getLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
 	}
-
 	public List<TeleportRequest> requests() {
 		return new ArrayList<>(requests.values());
 	}
@@ -132,5 +136,24 @@ public class User {
 			}
 		}
 		return false;
+	}
+
+	public Set<String> blocked(){
+		return blockedUsers.keySet();
+	}
+
+	public void findLatest(){
+		others().sort((a, b) -> {
+			if (a.getTimeEnd() > b.getTimeEnd()) {
+				return -1; // a should be sorted before b
+			} else if (a.getTimeEnd() < b.getTimeEnd()) {
+				return 1; // b should be sorted before a
+			} else {
+				return 0; // the order of a and b doesn't matter
+			}
+		});
+		latestRequest = others().get(1);
+	}
+	private void sort(){
 	}
 }

@@ -3,10 +3,10 @@ package me.antritus.minecraft_server.wormhole.commands.request;
 import me.antritus.minecraft_server.wormhole.Wormhole;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.ColorUtils;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
-import me.antritus.minecraft_server.wormhole.commands.CoreCommand;
+import me.antritus.minecraft_server.wormhole.astrolminiapi.CoreCommand;
 import me.antritus.minecraft_server.wormhole.events.PlayerTabCompleteRequestEvent;
 import me.antritus.minecraft_server.wormhole.events.TpRequestEventFactory;
-import me.antritus.minecraft_server.wormhole.events.request.TpRequestPlayerPrepareParseEvent;
+import me.antritus.minecraft_server.wormhole.events.TpPlayerAfterParseEvent;
 import me.antritus.minecraft_server.wormhole.events.request.TpRequestSendEvent;
 import me.antritus.minecraft_server.wormhole.manager.TeleportRequest;
 import me.antritus.minecraft_server.wormhole.manager.User;
@@ -23,9 +23,10 @@ import java.util.List;
  */
 public class CMDTpa extends CoreCommand {
 	public CMDTpa() {
-		super("tpa");
-		setDescription(Wormhole.configuration.getString("commands.tpa.description", "Allows player to ask a teleport to specific player"));
-		setUsage(Wormhole.configuration.getString("commands.tpa.usage", "/tpa <online player>"));
+		super("tpa", Wormhole.configuration.getLong("commands.tpa.cooldown", 0));
+		setPermission("wormhole.request");
+		setDescription(Wormhole.configuration.getString("commands.tpa.description", "commands.tpa.description"));
+		setUsage(Wormhole.configuration.getString("commands.tpa.usage", "commands.tpa.usage"));
 		setAliases(Wormhole.configuration.getStringList("commands.tpa.aliases"));
 	}
 
@@ -50,7 +51,7 @@ public class CMDTpa extends CoreCommand {
 				return true;
 			}
 		}
-		TpRequestPlayerPrepareParseEvent parseEvent = TpRequestEventFactory.createSendPrepareEvent("tpa", player, requested);
+		TpPlayerAfterParseEvent parseEvent = TpRequestEventFactory.createSendPrepareEvent("tpa", player, requested);
 		TpRequestEventFactory.trigger(parseEvent);
 		if (parseEvent.isCancelled()){
 			return true;
@@ -76,6 +77,7 @@ public class CMDTpa extends CoreCommand {
 			Wormhole.sendMessage(player, requested, "commands.tpa.request-already-sent");
 			return true;
 		} else {
+
 			TpRequestSendEvent event = TpRequestEventFactory.createSendEvent(player, requested);
 			TpRequestEventFactory.trigger(event);
 			if (event.isCancelled()){
@@ -85,6 +87,7 @@ public class CMDTpa extends CoreCommand {
 			requestUser.receiveRequest(request);
 			Wormhole.sendMessage(player, requested, "commands.tpa.sent-sender");
 			Wormhole.sendMessage(requested, player, "commands.tpa.sent-requested");
+			cooldowns.put(player.getUniqueId(), System.currentTimeMillis()+super.cooldown);
 		}
 		return true;
 	}
@@ -101,7 +104,9 @@ public class CMDTpa extends CoreCommand {
 							Wormhole.manager.getUser(sender).getRequest(player, TeleportRequest.Type.SENDER) != null
 									&&
 									Wormhole.manager.getUser(sender).
-											getRequest(player, TeleportRequest.Type.SENDER).isValid());
+											getRequest(player, TeleportRequest.Type.SENDER).isValid()
+					|| Wormhole.manager.getUser(player).isBlocked(sender)
+			);
 			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent("tpa", sender, players);
 			Bukkit.getServer().getPluginManager().callEvent(e);
 			List<String> finalList = new ArrayList<>();

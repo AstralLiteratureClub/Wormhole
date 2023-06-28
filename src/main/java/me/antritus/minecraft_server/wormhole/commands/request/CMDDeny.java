@@ -4,8 +4,9 @@ package me.antritus.minecraft_server.wormhole.commands.request;
 import me.antritus.minecraft_server.wormhole.Wormhole;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.ColorUtils;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
-import me.antritus.minecraft_server.wormhole.commands.CoreCommand;
+import me.antritus.minecraft_server.wormhole.astrolminiapi.CoreCommand;
 import me.antritus.minecraft_server.wormhole.events.PlayerTabCompleteRequestEvent;
+import me.antritus.minecraft_server.wormhole.events.TpPlayerAfterParseEvent;
 import me.antritus.minecraft_server.wormhole.events.TpRequestEventFactory;
 import me.antritus.minecraft_server.wormhole.events.request.*;
 import me.antritus.minecraft_server.wormhole.manager.TeleportRequest;
@@ -24,9 +25,10 @@ import java.util.List;
  */
 public class CMDDeny extends CoreCommand {
 	public CMDDeny() {
-		super("tpdeny");
-		setDescription(Wormhole.configuration.getString("commands.tpdeny.description", "Allows player to deny teleport of given player."));
-		setUsage(Wormhole.configuration.getString("commands.tpdeny.usage", "/tpdeny <online player>"));
+		super("tpdeny", Wormhole.configuration.getLong("commands.tpdeny.cooldown", 0));
+		setPermission("wormhole.deny");
+		setDescription(Wormhole.configuration.getString("commands.tpdeny.description", "commands.tpdeny.description"));
+		setUsage(Wormhole.configuration.getString("commands.tpdeny.usage", "commands.tpdeny.usage"));
 		setAliases(Wormhole.configuration.getStringList("commands.tpdeny.aliases"));
 	}
 
@@ -51,7 +53,7 @@ public class CMDDeny extends CoreCommand {
 				return true;
 			}
 		}
-		TpRequestPlayerPrepareParseEvent parseEvent = TpRequestEventFactory.createSendPrepareEvent("tpdeny", player, sender);
+		TpPlayerAfterParseEvent parseEvent = TpRequestEventFactory.createSendPrepareEvent("tpdeny", player, sender);
 		TpRequestEventFactory.trigger(parseEvent);
 		if (parseEvent.isCancelled()){
 			return true;

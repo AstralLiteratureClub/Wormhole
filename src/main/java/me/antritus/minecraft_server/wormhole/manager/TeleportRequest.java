@@ -14,8 +14,11 @@ public class TeleportRequest {
 	private UUID whoRequested;
 	private UUID requested;
 	private long timeEnd;
-	public long teleportEnd = -1;
+	public final long created = System.currentTimeMillis();
+	public int seconds = -1;
+	public long teleporting = -1;
 	public long lastSentMessage = -1;
+	public boolean accepted = false;
 	public TeleportRequest(Player who, Player requested, long end) {
 		this.whoRequested = who.getUniqueId();
 		this.requested = requested.getUniqueId();

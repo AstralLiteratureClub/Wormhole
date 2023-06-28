@@ -34,50 +34,57 @@ public class TeleportManager implements Listener {
 		task = new BukkitRunnable() {
 			@Override
 			public void run() {
-				List<UUID> clearance = new ArrayList<>();
-				users.forEach(
-						(uuid, user)
-								->
-						{
-							if (!user.isOnline() && user.getLastOnline()+1500 < System.currentTimeMillis()){
-								clearance.add(uuid);
-							} else if (user.isOnline()) {
-								long now = System.currentTimeMillis();
-								user.lastOnline = now;
-								List<TeleportRequest> requestClearance = new ArrayList<>();
-								user.requests().forEach(
-										(
-												(request) ->
-												{
-													if (request.teleportEnd < 0){
-														requestClearance.add(request);
-													} else {
-														if (request.lastSentMessage-System.currentTimeMillis() < 0 && Wormhole.configuration.getBoolean("teleport-accepted.teleport-every-second.enabled", false)){
-															Wormhole.sendMessage(Bukkit.getPlayer(request.getWhoRequested()), Bukkit.getPlayer(request.getRequested()), "teleport-accepted.teleport-every-second.enabled");
-															request.lastSentMessage = System.currentTimeMillis()+500;
-														}
-													}
-													if (now < request.getTimeEnd() && request.teleportEnd < 0){
-														Wormhole.sendMessage(Bukkit.getPlayer(request.getWhoRequested()), Bukkit.getPlayer(request.getRequested()), "request-canceled.time-ran-out-sender");
-														requestClearance.add(request);
-													}
-												}
-										)
-								);
-								user.removeRequest(requestClearance);
-								requestClearance.clear();
-								user.others().forEach(
-										(request) -> {
-											if (now < request.getTimeEnd() && request.teleportEnd < 0){
-												Wormhole.sendMessage(Bukkit.getPlayer(request.getWhoRequested()), Bukkit.getPlayer(request.getRequested()), "request-canceled.time-ran-out-requested");
-												requestClearance.add(request);
-											}
+				List<User> removeList = new ArrayList<>();
+				users.forEach((uniqueId, user)->{
+					// Check all users
+					// Unload them after 45 seconds. This is because players can relog to the server within ~30 seconds.
+					if (!user.isOnline() && System.currentTimeMillis()-user.lastOnline>45000){
+						removeList.add(user);
+					}else {
+						Player pl = Bukkit.getPlayer(uniqueId);
+						if (pl == null){
+							throw new RuntimeException("Could not find player: "+ uniqueId);
+						}
+						if (user.requests().size() > 0) {
+							for (TeleportRequest request : user.requests()) {
+								if (request.accepted) {
+									if (request.teleporting<0){
+										user.removeRequest(request);
+										continue;
+									}
+									// Every second send message if setting applies
+									if (request.teleporting<=System.currentTimeMillis()){
+										user.teleport(request);
+									}
+									if (System.currentTimeMillis()-request.lastSentMessage>1000) {
+										Player req = Bukkit.getPlayer(request.getRequested());
+										if (req == null){
+											throw new RuntimeException("Could not find player: "+ request.getRequested());
 										}
-								);
-								user.removeOther(requestClearance);
+										Wormhole.sendMessage(pl, req, "teleport-accepted.teleport-every-second.message", "%second%="+request.seconds+"");
+										request.lastSentMessage=System.currentTimeMillis();
+									}
+								} else {
+									if (request.getTimeEnd()<=System.currentTimeMillis()){
+										user.removeRequest(request);
+										Wormhole.sendMessage(pl, "time-ran-out-sender");
+									}
+								}
 							}
 						}
-				);
+						if (user.others().size() > 0) {
+							for (TeleportRequest request : user.others()) {
+								if (request.getTimeEnd()<=System.currentTimeMillis()){
+									user.removeOther(request);
+									Wormhole.sendMessage(pl, "time-ran-out-requested");
+								}
+							}
+						}
+					}
+				});
+				for (User user : removeList) {
+					users.remove(user.getUniqueId());
+				}
 			}
 		}.runTaskTimerAsynchronously(main, 20, 10);
 	}

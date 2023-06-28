@@ -1,4 +1,4 @@
-package me.antritus.minecraft_server.wormhole.events.request;
+package me.antritus.minecraft_server.wormhole.events;
 
 import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
 import org.bukkit.entity.Player;
@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerEvent;
  * @author antritus
  * @since 1.0.0-snapshot
  */
-public class TpRequestEvent extends PlayerEvent {
+public class TpAbstractEvent extends PlayerEvent {
 	private static final HandlerList HANDLERS = new HandlerList();
 	private final Player requested;
 	private boolean isCancelled;
@@ -19,7 +19,7 @@ public class TpRequestEvent extends PlayerEvent {
 	 * @param who who requested
 	 * @param requested requested player
 	 */
-	public TpRequestEvent(@NotNull Player who, @NotNull Player requested) {
+	public TpAbstractEvent(@NotNull Player who, @NotNull Player requested) {
 		super(who);
 		this.requested = requested;
 	}

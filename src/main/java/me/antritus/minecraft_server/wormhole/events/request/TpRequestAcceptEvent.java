@@ -1,6 +1,7 @@
 package me.antritus.minecraft_server.wormhole.events.request;
 
 import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
+import me.antritus.minecraft_server.wormhole.events.TpAbstractEvent;
 import me.antritus.minecraft_server.wormhole.manager.TeleportRequest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -9,7 +10,7 @@ import org.bukkit.event.HandlerList;
 /**
  * This event is fired when player accepts teleport
  */
-public class TpRequestAcceptEvent extends TpRequestEvent implements Cancellable {
+public class TpRequestAcceptEvent extends TpAbstractEvent implements Cancellable {
 	private static final HandlerList HANDLERS = new HandlerList();
 
 	public static HandlerList getHandlerList(){

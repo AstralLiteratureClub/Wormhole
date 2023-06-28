@@ -3,10 +3,10 @@ package me.antritus.minecraft_server.wormhole.commands.request;
 import me.antritus.minecraft_server.wormhole.Wormhole;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.ColorUtils;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
-import me.antritus.minecraft_server.wormhole.commands.CoreCommand;
+import me.antritus.minecraft_server.wormhole.astrolminiapi.CoreCommand;
 import me.antritus.minecraft_server.wormhole.events.PlayerTabCompleteRequestEvent;
 import me.antritus.minecraft_server.wormhole.events.TpRequestEventFactory;
-import me.antritus.minecraft_server.wormhole.events.request.TpRequestPlayerPrepareParseEvent;
+import me.antritus.minecraft_server.wormhole.events.TpPlayerAfterParseEvent;
 import me.antritus.minecraft_server.wormhole.manager.TeleportRequest;
 import me.antritus.minecraft_server.wormhole.manager.User;
 import org.bukkit.Bukkit;
@@ -23,9 +23,10 @@ import java.util.List;
  */
 public class CMDRequests extends CoreCommand {
 	public CMDRequests(){
-		super("tprequests");
-		setDescription(Wormhole.configuration.getString("commands.tprequests.description", "Allows player to see teleport requests."));
-		setUsage(Wormhole.configuration.getString("commands.tprequests.usage", "/tprequests"));
+		super("tprequests", Wormhole.configuration.getLong("commands.tprequests.cooldown", 0));
+		setPermission("wormhole.requests");
+		setDescription(Wormhole.configuration.getString("commands.tprequests.description", "commands.tprequests.description"));
+		setUsage(Wormhole.configuration.getString("commands.tprequests.usage", "commands.tprequest.usage"));
 		setAliases(Wormhole.configuration.getStringList("commands.tprequests.aliases"));
 	}
 	@Override
@@ -49,7 +50,7 @@ public class CMDRequests extends CoreCommand {
 				Wormhole.sendMessage(player, other, "commands.tprequests.no-perms-check-others");
 				return true;
 			}
-			TpRequestPlayerPrepareParseEvent parseEvent = TpRequestEventFactory.createSendPrepareEvent("tprequests", player, other);
+			TpPlayerAfterParseEvent parseEvent = TpRequestEventFactory.createSendPrepareEvent("tprequests", player, other);
 			TpRequestEventFactory.trigger(parseEvent);
 			if (parseEvent.isCancelled()){
 				return true;
@@ -90,7 +91,9 @@ public class CMDRequests extends CoreCommand {
 		if (other != null){
 			msgFormat = Wormhole.configuration.getString("commands.tprequests.format-other", "commands.tprequests.format-other").replace("%sent%", sent.toString()).replace("%received%", requested.toString()).replace("%who%", other.getName());
 		}
+		msgFormat = msgFormat.replace("%latest%", user.latestRequest != null ? Bukkit.getPlayer(user.latestRequest.getWhoRequested()).getName() : "None");
 		commandSender.sendMessage(ColorUtils.translateComp(msgFormat));
+		cooldowns.put(player.getUniqueId(), System.currentTimeMillis()+super.cooldown);
 		return true;
 	}
 

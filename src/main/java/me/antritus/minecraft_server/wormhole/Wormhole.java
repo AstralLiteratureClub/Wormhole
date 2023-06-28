@@ -2,7 +2,7 @@ package me.antritus.minecraft_server.wormhole;
 
 import me.antritus.minecraft_server.wormhole.astrolminiapi.ColorUtils;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.Configuration;
-import me.antritus.minecraft_server.wormhole.commands.CoreCommand;
+import me.antritus.minecraft_server.wormhole.astrolminiapi.CoreCommand;
 import me.antritus.minecraft_server.wormhole.commands.admin.CMDReload;
 import me.antritus.minecraft_server.wormhole.commands.block.CMDBlock;
 import me.antritus.minecraft_server.wormhole.commands.block.CMDToggle;
@@ -12,6 +12,7 @@ import me.antritus.minecraft_server.wormhole.commands.request.CMDDeny;
 import me.antritus.minecraft_server.wormhole.commands.request.CMDRequests;
 import me.antritus.minecraft_server.wormhole.commands.request.CMDTpa;
 import me.antritus.minecraft_server.wormhole.manager.TeleportManager;
+import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -56,10 +57,28 @@ public class Wormhole extends JavaPlugin {
 		msg = msg.replace("%who%", ColorUtils.deseriazize(who.name()));
 		player.sendMessage(ColorUtils.translateComp(msg));
 	}
+	public static void sendMessage(Player player, Player who, String key, String... replacements){
+		String msg = configuration.getString(key, key);
+		msg = msg.replace("%who%", ColorUtils.deseriazize(who.name()));
+		for (String replacement : replacements) {
+			String[] split = replacement.split("=");
+			msg = msg.replace(split[0], split[1]);
+		}
+		player.sendMessage(ColorUtils.translateComp(msg));
+	}
 	public static void sendMessage(Player player, String  who, String key){
 		String msg = configuration.getString(key, key);
 		msg = msg.replace("%who%", who);
 		player.sendMessage(ColorUtils.translateComp(msg));
+	}
+
+	public static void sendKey(Player player, String key){
+		String msg = configuration.getString(key, key);
+		player.sendMessage(ColorUtils.translateComp(msg));
+	}
+	public static void sendMessage(Player player, String msg){
+		Component component = ColorUtils.translateComp(msg);
+		player.sendMessage(component);
 	}
 
 	public static void reload(){

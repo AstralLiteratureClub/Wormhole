@@ -1,4 +1,4 @@
-package me.antritus.minecraft_server.wormhole.events.request;
+package me.antritus.minecraft_server.wormhole.events;
 
 import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
 import org.bukkit.entity.Player;
@@ -10,7 +10,7 @@ import org.bukkit.event.HandlerList;
  * @author antritus
  * @since 1.0.0-snapshot
  */
-public class TpRequestPlayerPrepareParseEvent extends TpRequestEvent implements Cancellable {
+public class TpPlayerAfterParseEvent extends TpAbstractEvent implements Cancellable {
 	private static HandlerList HANDLERS = new HandlerList();
 	private final Player requested;
 	private boolean isCancelled;
@@ -19,7 +19,7 @@ public class TpRequestPlayerPrepareParseEvent extends TpRequestEvent implements 
 	 * @param who who requested
 	 * @param requested requested player
 	 */
-	public TpRequestPlayerPrepareParseEvent(String command, @NotNull Player who, @NotNull Player requested) {
+	public TpPlayerAfterParseEvent(String command, @NotNull Player who, @NotNull Player requested) {
 		super(who, who);
 		this.requested = requested;
 		this.command =command;

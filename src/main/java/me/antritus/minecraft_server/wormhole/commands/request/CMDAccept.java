@@ -4,8 +4,9 @@ package me.antritus.minecraft_server.wormhole.commands.request;
 import me.antritus.minecraft_server.wormhole.Wormhole;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.ColorUtils;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
-import me.antritus.minecraft_server.wormhole.commands.CoreCommand;
+import me.antritus.minecraft_server.wormhole.astrolminiapi.CoreCommand;
 import me.antritus.minecraft_server.wormhole.events.PlayerTabCompleteRequestEvent;
+import me.antritus.minecraft_server.wormhole.events.TpPlayerAfterParseEvent;
 import me.antritus.minecraft_server.wormhole.events.TpRequestEventFactory;
 import me.antritus.minecraft_server.wormhole.events.request.TpRequestAcceptEvent;
 import me.antritus.minecraft_server.wormhole.events.request.TpRequestPlayerPrepareParseEvent;
@@ -26,9 +27,10 @@ import java.util.List;
 public class CMDAccept extends CoreCommand {
 
 	public CMDAccept() {
-		super("tpaccept");
-		setDescription(Wormhole.configuration.getString("commands.tpaccept.description", "Allows players to accept teleport of given player."));
-		setUsage(Wormhole.configuration.getString("commands.tpaccept.usage", "/tpaccept <online player>"));
+		super("tpaccept", Wormhole.configuration.getLong("commands.tpaccept.cooldown", 0));
+		setPermission("wormhole.accept");
+		setDescription(Wormhole.configuration.getString("commands.tpaccept.description", "commands.tpaccept.description"));
+		setUsage(Wormhole.configuration.getString("commands.tpaccept.usage", "commands.tpaccept.usage"));
 		setAliases(Wormhole.configuration.getStringList("commands.tpaccept.aliases"));
 	}
 
@@ -40,7 +42,39 @@ public class CMDAccept extends CoreCommand {
 			return true;
 		}
 		if (args.length == 0){
-			player.sendMessage(ColorUtils.translateComp(Wormhole.configuration.getString("commands.tpaccept.incorrect-format", "commands.tpaccept.incorrect-format")));
+			User user = Wormhole.manager.getUser(player);
+			if (user.latestRequest == null){
+				player.sendMessage(ColorUtils.translateComp(Wormhole.configuration.getString("commands.tpaccept.no-latest-requests", "commands.tpaccept.no-latest-requests")));
+				return true;
+			}
+			TeleportRequest request = user.latestRequest;
+			Player sender = Bukkit.getPlayer(request.getWhoRequested());
+			if (sender == null){
+				player.sendMessage(ColorUtils.translateComp(Wormhole.configuration.getString("settings.player-receive-error", "settings.player-receive-error")));
+				user.latestRequest = null;
+				return true;
+			}
+			User senderUser = Wormhole.manager.getUser(sender);
+			if (senderUser == null){
+				user.latestRequest = null;
+				user.findLatest();
+				throw new RuntimeException("Could not get user of: "+ sender.getName());
+			}
+			if (user.getRequest(player, TeleportRequest.Type.SENDER).equals(request)){
+				TpRequestAcceptEvent event = TpRequestEventFactory.createAcceptEvent(player, sender, request);
+				TpRequestEventFactory.trigger(event);
+				if (event.isCancelled()){
+					return true;
+				}
+				user.latestRequest = null;
+				user.findLatest();
+				senderUser.teleport(request);
+				Wormhole.sendMessage(sender, player, "commands.tpaccept.accepted-sender");
+				Wormhole.sendMessage(player, sender, "commands.tpaccept.accepted-requested");
+				cooldowns.put(player.getUniqueId(), System.currentTimeMillis()+super.cooldown);
+			} else {
+				player.sendMessage(ColorUtils.translateComp(Wormhole.configuration.getString("commands.tpaccept.no-request-found", "commands.tpaccept.no-request-found")));
+			}
 			return true;
 		}
 		Player sender = Bukkit.getPlayer(args[0]);
@@ -54,7 +88,7 @@ public class CMDAccept extends CoreCommand {
 				return true;
 			}
 		}
-		TpRequestPlayerPrepareParseEvent parseEvent = TpRequestEventFactory.createSendPrepareEvent("tpaccept", player, sender);
+		TpPlayerAfterParseEvent parseEvent = TpRequestEventFactory.createSendPrepareEvent("tpaccept", player, sender);
 		TpRequestEventFactory.trigger(parseEvent);
 		if (parseEvent.isCancelled()){
 			return true;
@@ -73,6 +107,8 @@ public class CMDAccept extends CoreCommand {
 			Wormhole.sendMessage(player, sender, "commands.tpaccept.no-request-found");
 			return true;
 		}
+		Bukkit.broadcastMessage(requestPlayer.toString());
+		Bukkit.broadcastMessage(requestSender.toString());
 		if (requestPlayer.equals(requestSender)){
 			TpRequestAcceptEvent event = TpRequestEventFactory.createAcceptEvent(player, sender, requestSender);
 			TpRequestEventFactory.trigger(event);
@@ -82,8 +118,9 @@ public class CMDAccept extends CoreCommand {
 			senderUser.teleport(requestPlayer);
 			Wormhole.sendMessage(sender, player, "commands.tpaccept.accepted-sender");
 			Wormhole.sendMessage(player, sender, "commands.tpaccept.accepted-requested");
+			cooldowns.put(player.getUniqueId(), System.currentTimeMillis()+super.cooldown);
 		} else {
-			player.sendMessage(ColorUtils.translateComp(Wormhole.configuration.getString("commands.tpaccept.no-request-found", "commands.tpaccept.no-request-found")));
+			Wormhole.sendMessage(player, sender, "commands.tpaccept.no-request-found");
 			return true;
 		}
 		return true;

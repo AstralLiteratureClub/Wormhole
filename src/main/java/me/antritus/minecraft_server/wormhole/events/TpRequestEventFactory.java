@@ -11,11 +11,11 @@ import org.bukkit.entity.Player;
  * @author antritus
  */
 public class TpRequestEventFactory {
-	public static void trigger(TpRequestEvent event){
+	public static void trigger(TpAbstractEvent event){
 		Bukkit.getPluginManager().callEvent(event);
 	}
-	public static TpRequestPlayerPrepareParseEvent createSendPrepareEvent(String name, Player player, Player requested){
-		return new TpRequestPlayerPrepareParseEvent(name, player, requested);
+	public static TpPlayerAfterParseEvent createSendPrepareEvent(String name, Player player, Player requested){
+		return new TpPlayerAfterParseEvent(name, player, requested);
 	}
 	public static TpRequestSendEvent createSendEvent(Player player, Player requested){
 		return new TpRequestSendEvent(player, requested, Wormhole.REQUEST_TIME);

@@ -1,5 +1,6 @@
 # Don't edit
 version: 1.0.0
+# Debug mode enables teleporting to self
 debug: false
 
 # request-time = 1000 millis = 1 sec
@@ -7,13 +8,15 @@ settings:
   request-time: 30000
   teleport-time: 0
   cancel-on-teleport-movement: true
+  cooldown-message: "<red>You are on a cooldown for this command!"
   permission-message: "<red>Unknown command or you do not have permissions to use this.<red>"
   player-only-command: "<red>Only players can use this command!"
   no-player-tab-completion: ""
+  player-receive-error: "<red>Could not get player for name/uuid: <white>%who%</white>"
 teleport-accepted:
   teleport-every-second:
     enabled: true
-    message: "<yellow>Teleporting to <white>%who%</white> in <white>%second%</white>."
+    message: "<yellow>Teleporting to <white>%who%</white> in <white>%second%s</white>."
   teleporting: "<yellow>Teleporting to <white>%who%</white>..."
 request-canceled:
   request-denied: "<red>Your teleport request to <white>%who%</white> was denied."
@@ -41,7 +44,7 @@ commands:
     description: "Allows player to accept teleport of given player."
     usage: "/tpaccept <online player>"
     aliases: []
-    incorrect-format: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
+    no-latest-requests: "<red>You have no latest requests! <gray>/tpaccept <online player>"
     unknown-player: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
     request-self: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
     no-request-found: "<red>Could not find any teleport requests from <white>%who%</white>!</red>"
@@ -62,10 +65,15 @@ commands:
     description: "Allows player to unblock teleport requests of given player."
     usage: "/tpblock <online player>"
     aliases: []
+    list:
+      no-blocked: "<green>You have no blocked users!</green>"
+      format: "<green>Block users <white>(%amount%)</white>:</green> <white>%blocked%</white"
+      blocked: "<red>%name%</red>"
+      comma: "<white>,</white>"
     incorrect-format: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
     unknown-player: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
+    already-block: "<red><white>%who%</white> is already blocked."
     blocked-sender: "<green>Blocked <white>%who%</white> from sending teleports to you!</green>"
-    blocked-user: "<red>You can no longer send teleport requests to <white>%who%</white>!</red>"
   tpunblock:
     cooldown: 0
     description: "Allows player to unblock teleport requests of given player."
@@ -73,8 +81,8 @@ commands:
     aliases: []
     incorrect-format: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
     unknown-player: "<red>Incorrect Usage! <gray>/tpaccept <online player>"
+    already-unblock: "<red><white>%who%</white> is not blocked."
     unblocked-sender: "<green>Unblocked <white>%who%</white> from sending teleports to you!</green>"
-    unblocked-user: "<red>You can now send teleport requests to <white>%who%</white>!</red>"
   tptoggle:
     cooldown: 0
     description: "Allows player toggle between receiving and not receiving ."
@@ -91,7 +99,7 @@ commands:
     no-perms-check-others: "<red>You do not have enough permissions to check <white>%who%</white>'s requests!"
     unknown-player: "<red>Incorrect Usage! <gray>/tprequests [online player]"
     format-self: "<green>Sent requests: <white>%sent%</white>\nReceived requests: <white>%received%</white>"
-    format-other: "<green><white>%who% sent requests: <white>%sent%</white>\n<green><white>%who% received requests: <white>%received%</white>"
+    format-other: "<white>%who%</white><green> latest tp request:</green> <white>%latest%</white>\n<green><white>%who% sent requests: <white>%sent%</white>\n<green><white>%who% received requests: <white>%received%</white>"
   tpreload:
     cooldown: 0
     description: "Allows reloading of the plugin configuration."
