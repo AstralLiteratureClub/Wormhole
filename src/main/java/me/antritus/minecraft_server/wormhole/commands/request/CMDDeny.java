@@ -29,7 +29,7 @@ public class CMDDeny extends CoreCommand {
 		super(wormhole, "tpdeny");
 		setPermission("wormhole.deny");
 		setDescription(wormhole.getCommandConfig().getString("tpdeny.description", "tpdeny.description"));
-		setUsage(wormhole.getConfig().getString("tpdeny.usage", "tpaccept.usage"));
+		setUsage(wormhole.getConfig().getString("tpdeny.usage", "tpdeny.usage"));
 		setAliases(wormhole.getConfig().getStringList("tpdeny.aliases"));
 	}
 
