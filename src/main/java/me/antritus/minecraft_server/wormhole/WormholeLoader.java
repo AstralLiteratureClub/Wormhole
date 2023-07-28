@@ -2,7 +2,7 @@ package me.antritus.minecraft_server.wormhole;
 
 import io.papermc.paper.plugin.loader.PluginClasspathBuilder;
 import io.papermc.paper.plugin.loader.PluginLoader;
-import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("UnstableApiUsage")
 public class WormholeLoader implements PluginLoader {

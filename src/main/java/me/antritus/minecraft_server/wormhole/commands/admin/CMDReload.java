@@ -1,28 +1,28 @@
 package me.antritus.minecraft_server.wormhole.commands.admin;
 
 import me.antritus.minecraft_server.wormhole.Wormhole;
-import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.CoreCommand;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Antritus
  * @since 1.0.0-snapshot
  */
 public class CMDReload extends CoreCommand {
-	public CMDReload() {
-		super("tpreload", 0);
+	public CMDReload(Wormhole wormhole){
+		super(wormhole, "tpreload");
 		setPermission("wormhole.reload");
-		setDescription(Wormhole.configuration.getString("commands.tpreload.description", "Allows reloading on Wormhole."));
-		setUsage(Wormhole.configuration.getString("commands.tpreload.usage", "/tpreload"));
-		setAliases(Wormhole.configuration.getStringList("commands.tpreload.aliases"));
+		setDescription(wormhole.getCommandConfig().getString("tpreload.description", "tpreload.description"));
+		setUsage(wormhole.getConfig().getString("tpreload.usage", "tpreload.usage"));
+		setAliases(wormhole.getConfig().getStringList("tpreload.aliases"));
 	}
 
 	@Override
 	public boolean execute(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] strings) {
-		sendMessage(commandSender, Wormhole.configuration.getString("commands.tpreload.reloading"));
+		wormhole.getMessageManager().message(commandSender, "reload.reloading");
 		Wormhole.reload();
-		sendMessage(commandSender, Wormhole.configuration.getString("commands.tpreload.reloaded"));
+		wormhole.getMessageManager().message(commandSender, "reload.reloaded");
 		return true;
 	}
 }

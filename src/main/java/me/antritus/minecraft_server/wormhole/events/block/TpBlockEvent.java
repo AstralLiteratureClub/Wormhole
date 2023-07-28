@@ -1,9 +1,9 @@
 package me.antritus.minecraft_server.wormhole.events.block;
 
-import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
 import me.antritus.minecraft_server.wormhole.events.TpAbstractEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Antritus

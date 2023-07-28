@@ -1,0 +1,64 @@
+placeholders:
+  - name: prefix
+    text: "<dark_gray>[<light_purple>Wormhole</light_purple>]</dark_gray>"
+  - name: break
+    text: "<dark_aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-"
+  - name: usage
+    text: "<red>Wrong Usage!</red>"
+
+command-parse:
+  incorrect-format: "%prefix% %usage% <click:suggest_command:/%command%><hover:show_text:'<green>Click here to suggest the correct format!'><gray>/%command%</gray></hover>"
+  player-only: "%prefix% <red>You cannot execute <white>%command%.</white>"
+  console-only: "%prefix% <red>You cannot execute <white>%command%.</white>"
+  no-tab:
+    player: "< No players found >"
+request:
+  unknown-player: "%prefix% <red>Unknown player! <gray>%who%</gray> is offline of has not played ever."
+  self: "%prefix% <red>You cannot request yourself to teleport."
+  blocked: "%prefix% <red><gray>%who%</white> has blocked your teleport requests."
+  disabled: "%prefix% <red><gray>%who%</white> is not accepting teleport requests."
+  duplicate: "%prefix% <red>You have already sent request to <gray>%who%</gray>."
+  sent-sender: "%prefix% <green>Sent invite to <white>%who%</white> <click:run:%command%><hover:show_text:<green>Click to execute: <white>/%command%</white><red><bold>CANCEL</hover></click>"
+  sent-receiver: "%prefix% <green>Sent invite to <white>%who%</white> <click:run:%command-accept%><hover:show_text:<green>Click to execute: <white>/%command-accept%</white><red><bold>DENY</hover></click> <click:run:%command-deny%><hover:show_text:<green>Click to execute: <white>/%command-deny%</white><red><bold>ACCEPT</hover></click>"
+blocK:
+  unknown-player: "%prefix% <red>Unknown player! <gray>%who%</gray> is offline of has not played ever."
+  already: "%prefix% <gray>%who%</gray><red> has been already blocked."
+  blocked: "%prefix% <gray>%who%</gray><red> has been blocked from sending teleport requests."
+unblock:
+  unknown-player: "%prefix% <red>Unknown player! <gray>%who%</gray> is offline of has not played ever."
+  already: "%prefix% <gray>%who%</gray><red> is not blocked."
+  blocked: "%prefix% <gray>%who%</gray><red> has been unblocked from sending teleport requests."
+toggle:
+  true: "%prefix% <green>You will <red>no longer</red> accept new requests from anyone. <click:run_command:/%command%>"
+  false: "%prefix% <green>You will <red>no longer</red> accept new requests from unblocked players."
+
+accept:
+  latest:
+    no-requests: "%prefix% <red>You have no pending teleport requests."
+    sender-null: "%prefix% <red>You have no pending teleport requests."
+  manual:
+    unknown-player: "%prefix% <red>Unknown player! <gray>%who%</gray> is offline of has not played ever."
+    self: "%prefix% <red>You cannot accept your own teleport request."
+    no-requests: "%prefix% <red>You have no pending teleport requests."
+  accept-sender: "%prefix% <green>Teleporting to <gray>%who%</gray>..."
+  accept-requested: "%prefix% <green><gray>%who%</gray> has been accepted.. teleporting..."
+
+deny:
+  latest:
+    no-requests: "%prefix% <red>You have no pending teleport requests."
+    sender-null: "%prefix% <red>You have no pending teleport requests."
+  manual:
+    unknown-player: "%prefix% <red>Unknown player! <gray>%who%</gray> is offline of has not played ever."
+    self: "%prefix% <red>You cannot deny your own teleport request."
+    no-requests: "%prefix% <red>You have no pending teleport requests."
+  deny-sender: "%prefix% <green>Denied the teleport request of <gray>%who%</gray>"
+  deny-requested: "%prefix% <green><gray>%who%</gray> has been denied your teleport request."
+
+help:
+  unknown-page:
+    - "<dark_aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-</dark_aqua> <yellow>Help</yellow> <gray>(<white>%page%</white>/<white>%pages%</white>)</gray> <dark_aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-</dark_aqua>"
+    - "<red>Unknown help page: <white>%page%<gray>/</gray>%pages%</white></red>."
+    - "<dark_aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-</dark_aqua> <yellow>Help</yellow> <gray>(<white>%page%</white>/<white>%pages%</white>)</gray> <dark_aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-</dark_aqua>"
+  above: "<dark_aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-</dark_aqua> <yellow>Help</yellow> <gray>(<white>%page%</white>/<white>%pages%</white>)</gray> <dark_aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-</dark_aqua>"
+  command: "<aqua>%command%</aqua> <gray>|</gray> <yellow>%description%</yellow>"
+  bottom: "<dark_aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-</dark_aqua> <yellow>Help</yellow> <gray>(<white>%page%</white>/<white>%pages%</white>)</gray> <dark_aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-</dark_aqua>"

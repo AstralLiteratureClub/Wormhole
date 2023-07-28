@@ -1,9 +1,9 @@
 package me.antritus.minecraft_server.wormhole.events.request;
 
-import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
 import me.antritus.minecraft_server.wormhole.manager.TeleportRequest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This event is fired when deny is about to happen

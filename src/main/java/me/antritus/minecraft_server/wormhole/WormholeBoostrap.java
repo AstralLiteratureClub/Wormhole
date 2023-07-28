@@ -3,8 +3,8 @@ package me.antritus.minecraft_server.wormhole;
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import io.papermc.paper.plugin.bootstrap.PluginBootstrap;
 import io.papermc.paper.plugin.bootstrap.PluginProviderContext;
-import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("UnstableApiUsage")
 public class WormholeBoostrap implements PluginBootstrap {

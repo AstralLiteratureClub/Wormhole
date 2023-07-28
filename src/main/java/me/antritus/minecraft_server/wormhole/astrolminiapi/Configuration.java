@@ -1,5 +1,6 @@
 package me.antritus.minecraft_server.wormhole.astrolminiapi;
 
+import com.google.gson.internal.bind.ObjectTypeAdapter;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,19 +20,15 @@ public class Configuration extends YamlConfiguration {
 	/**
 	 * Creates a new config with the given filename.
 	 */
-	public Configuration(JavaPlugin pl, File  file) {
+	public Configuration(JavaPlugin pl, String file) {
 		this.javaPlugin = pl;
-		this.filename = file.getName();
-		this.file = file;
-		System.out.println("javaPlugin: " + javaPlugin);
-		System.out.println("filename: " + filename);
+		this.filename = file;
+		this.file = new File(pl.getDataFolder(), file);
 		loadDefaults();
 		reload();
 	}
 
 	private void loadDefaults() {
-		System.out.println("javaPlugin: " + javaPlugin);
-		System.out.println("filename: " + filename);
 		final YamlConfiguration defaultConfig = new YamlConfiguration();
 		try (final InputStream inputStream = javaPlugin.getResource(filename)) {
 			if (inputStream != null) {
@@ -81,6 +78,16 @@ public class Configuration extends YamlConfiguration {
 	 */
 	public void save() throws IOException {
 		this.save(file);
+	}
+
+	public void load() throws IOException, InvalidConfigurationException {
+		this.load(file);
+	}
+
+	public void setIfNull(String key, Object obj){
+		if (get(key) == null){
+			set(key, obj);
+		}
 	}
 
 }

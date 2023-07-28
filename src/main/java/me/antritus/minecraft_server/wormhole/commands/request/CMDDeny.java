@@ -2,93 +2,135 @@ package me.antritus.minecraft_server.wormhole.commands.request;
 
 
 import me.antritus.minecraft_server.wormhole.Wormhole;
+import me.antritus.minecraft_server.wormhole.antsfactions.MessageManager;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.ColorUtils;
-import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.CoreCommand;
 import me.antritus.minecraft_server.wormhole.events.PlayerTabCompleteRequestEvent;
 import me.antritus.minecraft_server.wormhole.events.TpPlayerAfterParseEvent;
-import me.antritus.minecraft_server.wormhole.events.TpRequestEventFactory;
 import me.antritus.minecraft_server.wormhole.events.request.*;
 import me.antritus.minecraft_server.wormhole.manager.TeleportRequest;
 import me.antritus.minecraft_server.wormhole.manager.User;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @since 1.0.0-snapshot
  * @author antritus, lunarate
  */
 public class CMDDeny extends CoreCommand {
-	public CMDDeny() {
-		super("tpdeny", Wormhole.configuration.getLong("commands.tpdeny.cooldown", 0));
+	public CMDDeny(Wormhole wormhole){
+		super(wormhole, "tpdeny");
 		setPermission("wormhole.deny");
-		setDescription(Wormhole.configuration.getString("commands.tpdeny.description", "commands.tpdeny.description"));
-		setUsage(Wormhole.configuration.getString("commands.tpdeny.usage", "commands.tpdeny.usage"));
-		setAliases(Wormhole.configuration.getStringList("commands.tpdeny.aliases"));
+		setDescription(wormhole.getCommandConfig().getString("tpdeny.description", "tpdeny.description"));
+		setUsage(wormhole.getConfig().getString("tpdeny.usage", "tpaccept.usage"));
+		setAliases(wormhole.getConfig().getStringList("tpdeny.aliases"));
 	}
+
 
 	@Override
 	public boolean execute(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] args) {
+		MessageManager messageManager = wormhole.getMessageManager();
 		if (!(commandSender instanceof Player player)){
-			playerOnly();
+			messageManager.message(commandSender, "command-parse.player-only");
 			return true;
 		}
 		if (args.length == 0){
-			player.sendMessage(ColorUtils.translateComp(Wormhole.configuration.getString("commands.tpdeny.incorrect-format", "commands.tpdeny.incorrect-format")));
+			User user = wormhole.getUserDatabase().getKnownNonNull(player);
+			user.findLatest();
+			if (user.getLatestRequest() == null){
+				messageManager.message(player, "deny.latest.no-requests");
+				return true;
+			}
+			TeleportRequest request = user.getLatestRequest();
+			Player sender = Bukkit.getPlayer(request.getWhoRequested());
+			if (sender == null){
+				messageManager.message(player, "deny.latest.sender-null");
+				user.getReceivedRequests().remove(player.getUniqueId());
+				return true;
+			}
+			User senderUser = wormhole.getUserDatabase().get(sender);
+			if (senderUser == null){
+				messageManager.message(player, "deny.latest.sender-null");
+				user.getReceivedRequests().remove(player.getUniqueId());
+				user.findLatest();
+				throw new RuntimeException("Could not get user of: "+ sender.getName());
+			}
+			if (user.getReceivedRequests().get(request.getWhoRequested()).equals(request)){
+				TpRequestAcceptEvent event = new TpRequestAcceptEvent(player, sender, request);
+				event.callEvent();
+				if (event.isCancelled()){
+					return true;
+				}
+				user.getReceivedRequests().remove(request.getWhoRequested());
+				senderUser.getSentRequests().remove(request.getRequested());
+				user.findLatest();
+				request.accepted = false;
+				request.canceled = true;
+				request.teleporting = -1;
+				Wormhole.sendMessage(sender, player, "deny.denied-sender");
+				Wormhole.sendMessage(player, sender, "deny.denied-requested");
+			} else {
+				messageManager.message(player, "deny.latest.no-request");
+			}
 			return true;
 		}
 		Player sender = Bukkit.getPlayer(args[0]);
 		if (sender == null){
-			player.sendMessage(ColorUtils.translateComp(Wormhole.configuration.getString("commands.tpdeny.unknown-player", "commands.tpdeny.unknown-player")));
+			Wormhole.sendMessage(player, args[0], "deny.manual.unknown-player", "%command%=tpdeny <name>");
 			return true;
 		}
 		if (!Wormhole.DEBUG) {
 			if (player.getUniqueId().equals(sender.getUniqueId())) {
-				player.sendMessage(ColorUtils.translateComp(Wormhole.configuration.getString("commands.tpdeny.request-self", "commands.tpdeny.request-self")));
+				messageManager.message(player, "deny.manual.self", "%command%=tpdeny <name>");
 				return true;
 			}
 		}
-		TpPlayerAfterParseEvent parseEvent = TpRequestEventFactory.createSendPrepareEvent("tpdeny", player, sender);
-		TpRequestEventFactory.trigger(parseEvent);
+		TpPlayerAfterParseEvent parseEvent = new TpPlayerAfterParseEvent("tpdeny", player, sender);
+		parseEvent.callEvent();
 		if (parseEvent.isCancelled()){
 			return true;
 		}
-		User user = Wormhole.manager.getUser(player);
+		User user = wormhole.getUserDatabase().get(player);
 		if (user == null){
 			throw new RuntimeException("Could not get user of: "+ player.getName());
 		}
-		User senderUser = Wormhole.manager.getUser(sender);
+		User senderUser = wormhole.getUserDatabase().get(sender);
 		if (senderUser == null){
 			throw new RuntimeException("Could not get user of: "+ sender.getName());
 		}
-		TeleportRequest requestPlayer = user.getRequest(sender, TeleportRequest.Type.REQUESTED);
-		TeleportRequest requestSender = senderUser.getRequest(player, TeleportRequest.Type.SENDER);
+		TeleportRequest requestPlayer = user.getReceivedRequests().get(sender.getUniqueId());
+		TeleportRequest requestSender = senderUser.getSentRequests().get(player.getUniqueId());
 		if (requestPlayer == null){
-			Wormhole.sendMessage(player, sender, "commands.tpdeny.no-request-found");
+			Wormhole.sendMessage(player, sender, "commands.tpdeny.no-request-found", "%command%=tpdeny <name>");
 			return true;
 		}
 		if (requestPlayer.equals(requestSender)){
-			TpRequestDenyEvent event = TpRequestEventFactory.createDenyEvent(player, sender, requestSender);
-			TpRequestEventFactory.trigger(event);
+			TpRequestAcceptEvent event = new TpRequestAcceptEvent(player, sender, requestSender);
+			event.callEvent();
 			if (event.isCancelled()){
 				return true;
 			}
-			senderUser.removeRequest(requestSender);
-			user.removeOther(requestPlayer);
-			Wormhole.sendMessage(sender, player, "commands.tpdeny.denied-sender");
-			Wormhole.sendMessage(player, sender, "commands.tpdeny.denied-requested");
+			user.getReceivedRequests().remove(sender.getUniqueId());
+			senderUser.getSentRequests().remove(player.getUniqueId());
+			user.findLatest();
+			requestPlayer.accepted = false;
+			requestPlayer.canceled = true;
+			requestPlayer.teleporting = -1;
+			Wormhole.sendMessage(sender, player, "deny.denied-sender", "%command%=tpdeny <name>");
+			Wormhole.sendMessage(player, sender, "deny.denied-requested", "%command%=tpdeny <name>");
 		} else {
-			player.sendMessage(ColorUtils.translateComp(Wormhole.configuration.getString("commands.tpdeny.no-request-found", "commands.tpdeny.no-request-found")));
+			Wormhole.sendMessage(player, sender, "deny.manual.no-requests", "%command%=tpdeny <name>");
 			return true;
 		}
 		return true;
 	}
-
 
 	@Override
 	public @NotNull List<String> tabComplete(@NotNull CommandSender commandSender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
@@ -97,12 +139,11 @@ public class CMDDeny extends CoreCommand {
 			List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
 			players.remove(sender);
 			players.removeIf(player ->
-					Wormhole.manager.getUser(sender).getRequest(player, TeleportRequest.Type.SENDER) == null
+					wormhole.getUserDatabase().get(sender).getSentRequests().get(player.getUniqueId()) == null
 							||
-							(Wormhole.manager.getUser(sender).getRequest(player, TeleportRequest.Type.SENDER) != null
+							(wormhole.getUserDatabase().get(sender).getSentRequests().get(player.getUniqueId()) != null
 									&&
-									!Wormhole.manager.getUser(sender).
-											getRequest(player, TeleportRequest.Type.SENDER).isValid()));
+									!wormhole.getUserDatabase().get(sender).getSentRequests().get(player.getUniqueId()).isValid()));
 			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent("tpdeny", sender, players);
 			Bukkit.getServer().getPluginManager().callEvent(e);
 			List<String> finalList = new ArrayList<>();
@@ -110,7 +151,7 @@ public class CMDDeny extends CoreCommand {
 				finalList.add(player.getName());
 			}
 			if (finalList.isEmpty()){
-				finalList.add(Wormhole.configuration.getString("settings.no-player-tab-completion", "settings.no-player-tab-completion"));
+				finalList.add(wormhole.getMessageManager().messageConfig.getString(ColorUtils.translate("command-parse.no-tab.player"), "command-parse.no-tab.player"));
 			}
 			return finalList;
 		}

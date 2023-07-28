@@ -1,9 +1,9 @@
 package me.antritus.minecraft_server.wormhole.events;
 
-import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This event is sent right before sending if player exists or not.

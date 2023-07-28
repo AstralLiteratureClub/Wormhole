@@ -1,0 +1,42 @@
+tpa:
+  cooldown: 0
+  description: "Allows player to teleport to given player."
+  usage: "/tpa <online player>"
+  aliases: []
+tpaccept:
+  cooldown: 0
+  description: "Allows player to accept teleport of given player."
+  usage: "/tpaccept <online player>"
+  aliases: []
+tpdeny:
+  cooldown: 0
+  description: "Allows player to deny teleport of given player."
+  usage: "/tpa <online player>"
+  aliases: []
+tpblock:
+  cooldown: 0
+  description: "Allows player to unblock teleport requests of given player."
+  usage: "/tpblock <online player>"
+  aliases: []
+tpunblock:
+  cooldown: 0
+  description: "Allows player to unblock teleport requests of given player."
+  usage: "/tpunblock <online player>"
+  aliases: []
+tptoggle:
+  cooldown: 0
+  description: "Allows player toggle between receiving and not receiving ."
+  usage: "/tptoggle"
+  aliases: []
+  toggled-on: "<red>You will no longer receive teleport requests.</red>"
+  toggled-off: "<green>You will now receive teleport requests.</green>"
+tprequests:
+  cooldown: 0
+  description: "Allows player to see all their requests."
+  usage: "/tprequest"
+  aliases: []
+tpreload:
+  cooldown: 0
+  description: "Allows reloading of the plugin configuration."
+  usage: "/tprequest"
+  aliases: []
