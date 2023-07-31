@@ -1,7 +1,5 @@
 package me.antritus.minecraft_server.wormhole.antsfactions;
 
-import org.bukkit.plugin.java.JavaPlugin;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -11,7 +9,6 @@ public class CoreDatabase {
 
 	private Connection connection;
 
-	@SuppressWarnings("unchecked")
 	public CoreDatabase(FactionsPlugin main) {
 		this.main = main;
 
@@ -30,7 +27,7 @@ public class CoreDatabase {
 		}
 		try {
 			// todo other db types.
-			this.connection = DriverManager.getConnection(((SimpleProperty<String>) main.getCoreSettings().getKnownNonNull("database-url")).getValue(), ((SimpleProperty<String>) main.getCoreSettings().getKnownNonNull("database-user")).getValue(), ((SimpleProperty<String>) main.getCoreSettings().getKnownNonNull("database-password")).getValue());
+			this.connection = DriverManager.getConnection((String) main.getCoreSettings().getKnownNonNull("database-url").getValue(), (String) main.getCoreSettings().getKnownNonNull("database-user").getValue(), (String) main.getCoreSettings().getKnownNonNull("database-password").getValue());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
