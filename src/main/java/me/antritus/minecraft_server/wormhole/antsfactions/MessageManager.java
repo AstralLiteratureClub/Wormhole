@@ -17,6 +17,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
+/**
+ * This is a message manager which loads messages from plugins/plugin/messages.yml
+ * It is designed to work in 1.8 as for my factions were first made for 1.8.
+ * Removing some of the methods that allow 1.8 use it is possible, and could
+ * speed up the progress.
+ * But removing the support for 1.8 is not supported by @antritus.
+ */
 public class MessageManager {
 	private final MiniMessage miniMessage = MiniMessage.miniMessage();
 	private final FactionsPlugin main;
@@ -25,6 +32,7 @@ public class MessageManager {
 	private final ImmutableMap<String, Component> placeholders;
 	private final Map<String, Component> messages = new LinkedHashMap<>();
 	private final ImmutableMap<String, String> warningActions;
+	private final Map<String, Boolean> unused = new LinkedHashMap<>();
 	public MessageManager(FactionsPlugin main){
 		BukkitAudiences bukkitAudiences1;
 		this.main = main;
@@ -105,6 +113,7 @@ public class MessageManager {
 	}
 	private void load(String key){
 		if (messages.get(key) == null){
+
 			if (messageConfig.isList(key)){
 				ArrayList<String> msg = new ArrayList<>(messageConfig.getStringList(key));
 				ArrayList<Component> components = new ArrayList<>();
@@ -129,6 +138,9 @@ public class MessageManager {
 				String msg = messageConfig.getString(key);
 				if (msg == null){
 					msg = key;
+				}
+				if (msg.equals("UNUSED")){
+					unused.put(key, true);
 				}
 				Component component;
 				component = miniMessage.deserialize(msg);
@@ -156,6 +168,9 @@ public class MessageManager {
 	}
 	// Switch to async messages to reduce parse time from the server.
 	public void message(CommandSender player, String key, String... placeholders) {
+		if (unused.get(key) != null && unused.get(key)){
+			return;
+		}
 		new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -165,6 +180,9 @@ public class MessageManager {
 	}
 	// Switch to async messages to reduce parse time from the server.
 	public void message(boolean reparse, CommandSender player, String key, String... placeholders) {
+		if (unused.get(key) != null && unused.get(key)){
+			return;
+		}
 		new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -200,7 +218,7 @@ public class MessageManager {
 		Bukkit.getOnlinePlayers().stream().filter(
 				p->
 						// Switch to right plugin name
-						p.hasPermission("wormhole.receive-warnings")
+						p.hasPermission(main.getName().toLowerCase()+".receive-warnings")
 		).forEach(
 				p->
 						send(p, finalComponent)
@@ -211,6 +229,7 @@ public class MessageManager {
 
 	private final Method broadcast;
 	{
+		//noinspection RedundantSuppression
 		try {
 			//noinspection JavaReflectionMemberAccess
 			broadcast = Bukkit.class.getMethod("broadcast", Component.class);
