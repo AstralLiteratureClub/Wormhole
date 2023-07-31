@@ -23,7 +23,7 @@ teleporting:
   to:
     player-left: "%prefix% <red><white>%who%</white> has left the server while teleporting."
     to-left: "%prefix% <red><white>%who%</white> has left the server while teleporting."
-    player-moved: "%prefix% <red>You moved! No longer teleporting to <gray>%who</gray>"
+    player-moved: "%prefix% <red>You moved! No longer teleporting to <gray>%who%</gray>"
     to-moved: "%prefix% <red><gray>%who%</gray> moved! Their teleportation is canceled."
     second: "%prefix% <green>Teleporting to <white>%who%</white> in <white>%seconds%</white>."
     final: "%prefix% <green>Teleporting to <white>%who%</white>"
@@ -40,11 +40,11 @@ request:
 block:
   unknown-player: "%prefix% <red>Unknown player! <gray>%who%</gray> is offline or has not played ever."
   already: "%prefix% <gray>%who%</gray><red> has been already blocked."
-  blocked: "%prefix% <gray>%who%</gray><red> has been blocked from sending teleport requests."
+  blocked: "%prefix% <white>%who%</white><green> has been <red><bold>blocked</bold></red> from sending teleport requests."
 unblock:
   unknown-player: "%prefix% <red>Unknown player! <gray>%who%</gray> is offline of has not played ever."
   already: "%prefix% <gray>%who%</gray><red> is not blocked."
-  blocked: "%prefix% <gray>%who%</gray><red> has been unblocked from sending teleport requests."
+  unblocked: "%prefix% <white>%who%</white><green> has been <bold>unblocked</bold> from sending teleport requests."
 toggle:
   true: "%prefix% <green>You will <red>no longer</red> accept new requests from anyone. <click:run_command:/%command%>"
   false: "%prefix% <green>You will <red>no longer</red> accept new requests from unblocked players."
@@ -57,7 +57,7 @@ accept:
     unknown-player: "%prefix% <red>Unknown player! <gray>%who%</gray> is offline or has not played before."
     self: "%prefix% <red>You cannot accept your own teleport request."
     no-request: "%prefix% <red>You do not have teleport request from <white>%who%</white>."
-  accept-sender: "%prefix% <green>Teleporting to <gray>%who%</gray>.. Soon."
+  accept-sender: "%prefix% <green>Teleporting to <gray>%who%</gray>- soon."
   accept-requested: "%prefix% <green><gray>%who%</gray> has accepted the teleport request."
 deny:
   latest:
@@ -83,3 +83,7 @@ requests:
     - "%prefix% <green>Latest: <white>%latest%"
     - "%prefix% <green>Sent: <white>%sent%"
     - "%prefix% <green>Received: <white>%received%"
+
+reload:
+  reloading: "%prefix% <green>Reload started..."
+  reloaded: "%prefix% <green>Reloaded!"
