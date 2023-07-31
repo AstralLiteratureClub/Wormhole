@@ -6,6 +6,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 /**
  * @since 1.0.0-snapshot
@@ -13,6 +15,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
  */
 public class UserManager implements Listener {
 	private final Wormhole main;
+	private BukkitTask task;
 	public UserManager(Wormhole main) {
 		this.main = main;
 	}
@@ -26,6 +29,12 @@ public class UserManager implements Listener {
 				main.getUserDatabase().save(user);
 			});
 		}
+		task = new BukkitRunnable() {
+			@Override
+			public void run() {
+			}
+			// 30 minutes = 20 * 60 * 30 = 36_000
+		}.runTaskTimerAsynchronously(main, 0, 36_000);
 	}
 	public void onDisable() {
 		Bukkit.getOnlinePlayers().forEach(player->{
@@ -34,6 +43,7 @@ public class UserManager implements Listener {
 			user.online = false;
 			main.getUserDatabase().save(user);
 		});
+		task.cancel();
 	}
 
 	@EventHandler

@@ -9,6 +9,7 @@ import me.antritus.minecraft_server.wormhole.events.database.UserSaveEvent;
 import me.antritus.minecraft_server.wormhole.manager.User;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONArray;
@@ -67,37 +68,53 @@ public class UserDatabase implements Listener {
 	}
 
 	private void createStatement() {
-		Connection connection = main.getCoreDatabase().getConnection();
-		try {
-			Statement statement = connection.createStatement();
-			statement.executeUpdate(CREATE_QUERY_USER); // Use executeUpdate() for DDL queries
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				Connection connection = main.getCoreDatabase().getConnection();
+				try {
+					Statement statement = connection.createStatement();
+					statement.executeUpdate(CREATE_QUERY_USER); // Use executeUpdate() for DDL queries
+				} catch (SQLException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}.runTaskAsynchronously(main);
 	}
 
 	public void checkAndDropTable() {
 		boolean shouldDropTable = main.getConfig().getBoolean("delete-all-data", false);
 		if (shouldDropTable) {
-			try (Statement statement = main.getCoreDatabase().getConnection().createStatement()) {
-				statement.execute("DROP TABLE IF EXISTS wormhole_users");
-				main.getLogger().info("Table wormhole_users has been dropped.");
-			} catch (SQLException e) {
-				throw new RuntimeException("Failed to drop table wormhole_users.", e);
-			}
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					main.getConfig().set("delete-all-data", false);
+					try (Statement statement = main.getCoreDatabase().getConnection().createStatement()) {
+						statement.execute("DROP TABLE IF EXISTS wormhole_users");
+						main.getLogger().info("Table wormhole_users has been dropped.");
+					} catch (SQLException e) {
+						throw new RuntimeException("Failed to drop table wormhole_users.", e);
+					}
+				}
+			}.runTaskAsynchronously(main);
 		}
 	}
 	public void delete(User user) {
-		Connection connection = main.getCoreDatabase().getConnection();
-		String statementQuery = "DELETE FROM wormhole_users WHERE uniqueId = ?";
-		try (PreparedStatement statement = connection.prepareStatement(statementQuery)) {
-			statement.setString(1, user.getUniqueId().toString());
-			statement.executeUpdate();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-		UserDeleteEvent event = new UserDeleteEvent(user);
-		event.callAsync(main);
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				Connection connection = main.getCoreDatabase().getConnection();
+				String statementQuery = "DELETE FROM wormhole_users WHERE uniqueId = ?";
+				try (PreparedStatement statement = connection.prepareStatement(statementQuery)) {
+					statement.setString(1, user.getUniqueId().toString());
+					statement.executeUpdate();
+				} catch (SQLException e) {
+					throw new RuntimeException(e);
+				}
+				UserDeleteEvent event = new UserDeleteEvent(main, user);
+				event.callAsync(main);
+			}
+		}.runTaskAsynchronously(main);
 	}
 
 	private String toJSON(User user){
@@ -130,58 +147,68 @@ public class UserDatabase implements Listener {
 	}
 
 	public void save(User user) {
-		UserSaveEvent event = new UserSaveEvent(user);
-		event.callAsync(main);
-		Connection connection = main.getCoreDatabase().getConnection();
-		Property<String, ?> property = user.get("isNew");
-		if (property == null || !((Boolean) property.getValue())) {
-			try (PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY_USER)) {
-				statement.setBoolean(1, user.isAcceptingRequests);
-				statement.setString(2, toJSON(user));
-				statement.setString(3, user.getUniqueId().toString());
-				statement.executeUpdate();
-			} catch (SQLException e) {
-				throw new RuntimeException(e);
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				UserSaveEvent event = new UserSaveEvent(main, user);
+				event.callAsync(main);
+				Connection connection = main.getCoreDatabase().getConnection();
+				Property<String, ?> property = user.get("isNew");
+				if (property == null || !((Boolean) property.getValue())) {
+					try (PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY_USER)) {
+						statement.setBoolean(1, user.isAcceptingRequests);
+						statement.setString(2, toJSON(user));
+						statement.setString(3, user.getUniqueId().toString());
+						statement.executeUpdate();
+					} catch (SQLException e) {
+						throw new RuntimeException(e);
+					}
+				} else {
+					try (PreparedStatement statement = connection.prepareStatement(INSERT_QUERY_USER)) {
+						statement.setString(1, user.getUniqueId().toString());
+						statement.setBoolean(2, user.isAcceptingRequests);
+						statement.setString(3, toJSON(user));
+						statement.executeUpdate();
+					} catch (SQLException e) {
+						throw new RuntimeException(e);
+					}
+				}
 			}
-		} else {
-			try (PreparedStatement statement = connection.prepareStatement(INSERT_QUERY_USER)) {
-				statement.setString(1, user.getUniqueId().toString());
-				statement.setBoolean(2, user.isAcceptingRequests);
-				statement.setString(3, toJSON(user));
-				statement.executeUpdate();
-			} catch (SQLException e) {
-				throw new RuntimeException(e);
-			}
-		}
+		}.runTaskAsynchronously(main);
 	}
 
 	public void load(UUID uuid) {
-		Connection connection = main.getCoreDatabase().getConnection();
-		try (PreparedStatement statement = connection.prepareStatement(SELECT_QUERY_USER)) {
-			statement.setString(1, uuid.toString());
-			try (ResultSet resultSet = statement.executeQuery()) {
-				if (resultSet.next()) {
-					User user = new User(main, uuid);
-					UserLoadEvent event = new UserLoadEvent(user);
-					event.callAsync(main);
-					user.isAcceptingRequests = resultSet.getBoolean("enabled");
-					user.blocked().addAll(fromJSON(resultSet.getString("blocked")));
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				Connection connection = main.getCoreDatabase().getConnection();
+				try (PreparedStatement statement = connection.prepareStatement(SELECT_QUERY_USER)) {
+					statement.setString(1, uuid.toString());
+					try (ResultSet resultSet = statement.executeQuery()) {
+						if (resultSet.next()) {
+							User user = new User(main, uuid);
+							UserLoadEvent event = new UserLoadEvent(main, user);
+							event.callAsync(main);
+							user.isAcceptingRequests = resultSet.getBoolean("enabled");
+							user.blocked().addAll(fromJSON(resultSet.getString("blocked")));
 
-					cached.put(user.getUniqueId(), user);
-				} else {
-					User user = new User(main, uuid);
-					user.setting("isNew", true);
-					user.isAcceptingRequests = true;
-					cached.put(user.getUniqueId(), user);
-					UserLoadEvent event = new UserLoadEvent(user);
-					event.callAsync(main);
-					save(user);
+							cached.put(user.getUniqueId(), user);
+						} else {
+							User user = new User(main, uuid);
+							user.setting("isNew", true);
+							user.isAcceptingRequests = true;
+							cached.put(user.getUniqueId(), user);
+							UserLoadEvent event = new UserLoadEvent(main, user);
+							event.callAsync(main);
+							save(user);
 
+						}
+					}
+				} catch (SQLException e) {
+					throw new RuntimeException(e);
 				}
 			}
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+		}.runTaskAsynchronously(main);
 	}
 
 	public void unload(Player player) {
