@@ -14,64 +14,6 @@
           <target>17</target>
         </configuration>
       </plugin>
-      <plugin>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>3.5.0</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <relocations>
-                <relocation>
-                  <pattern>me.antritus.astrolapi</pattern>
-                  <shadedPattern>me.antritus.minecraft_server.wormhole.astrolminiapi</shadedPattern>
-                </relocation>
-              </relocations>
-              <filters>
-                <filter>
-                  <artifact>*:*</artifact>
-                  <excludes>
-                    <exclude>META-INF/*.SF</exclude>
-                    <exclude>META-INF/*.DSA</exclude>
-                    <exclude>META-INF/*.RSA</exclude>
-                  </excludes>
-                </filter>
-              </filters>
-            </configuration>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>me.antritus</groupId>
-            <artifactId>AstrolMiniAPI</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
-            <exclusions>
-              <exclusion>
-                <artifactId>Bukkit</artifactId>
-                <groupId>org.bukkit</groupId>
-              </exclusion>
-            </exclusions>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <filters>
-            <filter>
-              <artifact>me.antritus:AstrolMiniAPI</artifact>
-              <excludes>
-                <exclude>META-INF/MANIFEST.MF</exclude>
-                <exclude>META-INF/MANIFEST.MF</exclude>
-                <exclude>META-INF/maven/me.antritus/AstrolMiniAPI/pom.properties</exclude>
-                <exclude>META-INF/maven/me.antritus/AstrolMiniAPI/pom.xml</exclude>
-                <exclude>plugin.yml</exclude>
-              </excludes>
-            </filter>
-          </filters>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
   <repositories>
