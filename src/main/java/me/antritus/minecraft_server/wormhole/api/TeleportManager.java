@@ -44,7 +44,7 @@ public class TeleportManager implements Listener {
 							deleteList.add(key);
 							OfflinePlayer player = wormhole.getServer().getOfflinePlayer(request.getWhoAsked());
 							OfflinePlayer requested = wormhole.getServer().getOfflinePlayer(request.getWhoAsked());
-							TpRequestRanOutEvent event = new TpRequestRanOutEvent(player, requested, request);
+							TpRequestRanOutEvent event = new TpRequestRanOutEvent(wormhole, player, requested, request);
 							event.callEvent();
 							if (player.isOnline()) {
 								Wormhole.sendMessage(((Player) player), requested.getName(), "time-ran-out.to.player");
