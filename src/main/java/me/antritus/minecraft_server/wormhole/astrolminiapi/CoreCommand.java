@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 /**
  * @since 1.0.0-snapshot
  * @author antritus
+ * @version 2-Wormhole
  */
 public abstract class CoreCommand extends BukkitCommand {
 	public static void registerCommand(JavaPlugin plugin, String label, CoreCommand command) {
