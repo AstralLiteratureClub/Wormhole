@@ -43,20 +43,25 @@ public class User implements IUser {
 		return main;
 	}
 
-	public boolean isBlocked(@NotNull Player player) {
-		return blockedUsers.stream().anyMatch(id->id.equalsIgnoreCase(player.getUniqueId().toString()));
+	public boolean isBlocked(Player player) {
+		String playerUUIDString = player.getUniqueId().toString();
+		return blockedUsers.stream().anyMatch(id -> id.equals(playerUUIDString));
 	}
 
 	public void block(Player player) {
-		if (blockedUsers.stream().anyMatch(id->id.equalsIgnoreCase(player.getUniqueId().toString())))
+		String playerUUIDString = player.getUniqueId().toString();
+		if (blockedUsers.stream().anyMatch(id -> id.equals(playerUUIDString))) {
 			return;
-		blockedUsers.add(player.getUniqueId().toString());
-	}
-	public void unblock(Player player) {
-		blockedUsers.remove(player.getUniqueId().toString());
+		}
+		blockedUsers.add(playerUUIDString);
 	}
 
-	public List<String> blocked(){
+	public void unblock(Player player) {
+		String playerUUIDString = player.getUniqueId().toString();
+		blockedUsers.remove(playerUUIDString);
+	}
+
+	public List<String> blocked() {
 		return blockedUsers;
 	}
 
