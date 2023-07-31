@@ -14,6 +14,7 @@ import me.antritus.minecraft_server.wormhole.commands.request.to.CMDDeny;
 import me.antritus.minecraft_server.wormhole.commands.request.CMDRequests;
 import me.antritus.minecraft_server.wormhole.commands.request.to.CMDTpa;
 import me.antritus.minecraft_server.wormhole.database.UserDatabase;
+import me.antritus.minecraft_server.wormhole.events.WormholeReloadEvent;
 import me.antritus.minecraft_server.wormhole.manager.UserManager;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
@@ -116,6 +117,9 @@ public class Wormhole extends FactionsPlugin  {
 	}
 
 	public static void reload(){
+		WormholeReloadEvent event = new WormholeReloadEvent(wormhole);
+		event.callEvent();
+
 		wormhole.reloadConfig();
 
 		wormhole.userDatabase = new UserDatabase(wormhole);
@@ -142,8 +146,8 @@ public class Wormhole extends FactionsPlugin  {
 		coreSettings.load(new SimpleProperty<>("request-time", TimeFormatter.formatTime(configuration.getString("request-time", "30s")).toMillis()));
 		configuration.setIfNull("teleport-time", "0s");
 		coreSettings.load(new SimpleProperty<>("teleport-time", TimeFormatter.formatTime(configuration.getString("teleport-time", "0s")).toMillis()));
-		configuration.setIfNull("cancel-teleport-on-move", false);
-		coreSettings.load(new SimpleProperty<>("teleport-move", configuration.getBoolean("cancel-teleport-on-move", false)));
+		configuration.setIfNull("cancel-on-movement", false);
+		coreSettings.load(new SimpleProperty<>("cancel-on-movement", configuration.getBoolean("cancel-on-movement", false)));
 		configuration.setIfNull("max-movement-distance", 0.5D);
 		coreSettings.load(new SimpleProperty<>("max-movement-distance", configuration.getDouble("max-movement-distance", 0.5D)));
 
