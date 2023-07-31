@@ -1,19 +1,21 @@
-package me.antritus.minecraft_server.wormhole.commands.request;
+package me.antritus.minecraft_server.wormhole.commands.request.to;
 
 import me.antritus.minecraft_server.wormhole.Wormhole;
 import me.antritus.minecraft_server.wormhole.antsfactions.MessageManager;
+import me.antritus.minecraft_server.wormhole.api.Request;
+import me.antritus.minecraft_server.wormhole.api.TeleportManager;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.ColorUtils;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.CoreCommand;
 import me.antritus.minecraft_server.wormhole.events.PlayerTabCompleteRequestEvent;
 import me.antritus.minecraft_server.wormhole.events.TpPlayerAfterParseEvent;
 import me.antritus.minecraft_server.wormhole.events.request.TpRequestSendEvent;
-import me.antritus.minecraft_server.wormhole.manager.TeleportRequest;
 import me.antritus.minecraft_server.wormhole.manager.User;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import javax.imageio.stream.ImageInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -69,22 +71,22 @@ public class CMDTpa extends CoreCommand {
 			Wormhole.sendMessage(player, requested, "request.blocked", "%command%=tpa <player>");
 			return true;
 		}
-		if (!requestUser.isAcceptingRequests){
+		if (!requestUser.isAcceptingRequests) {
 			Wormhole.sendMessage(player, requested, "request.disabled", "%command%=tpa <player>");
 			return true;
 		}
-		TeleportRequest request = user.getSentRequests().get(requested.getUniqueId());
-		if (request != null && request.isValid()){
+		TeleportManager manager = wormhole.getTeleportManager();
+		if (manager.hasRequested(player, requested)){
 			Wormhole.sendMessage(player, requested, "request.duplicate", "%command%=tpa <player>");
 			return true;
 		} else {
-			request = new TeleportRequest(player, requested, (long) wormhole.getCoreSettings().getKnownNonNull("request-time").getValue());
-			TpRequestSendEvent event = new TpRequestSendEvent(player, requested, request.getTimeEnd());
+			Request request = new Request(wormhole, player.getUniqueId(), requested.getUniqueId());
+			TpRequestSendEvent event = new TpRequestSendEvent(player, requested, request.getEnd());
 			event.callEvent();
 			if (event.isCancelled()){
 				return true;
 			}
-			wormhole.userManager.sendRequest(user, requestUser, request);
+			manager.request(request);
 			Wormhole.sendMessage(player, requested, "request.sent-sender", "%command%=tpcancel "+requested.getName());
 			Wormhole.sendMessage(requested, player, "request.sent-requested", "%command-accept%=tpaccept "+player.getName(), "%command-deny%=tpdeny "+player.getName());
 		}
@@ -97,14 +99,8 @@ public class CMDTpa extends CoreCommand {
 			Player sender = (Player) commandSender;
 			List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
 			players.remove(sender);
-			players.removeIf(player ->
-					wormhole.getUserDatabase().getKnownNonNull(sender).getSentRequests().get(player.getUniqueId()) != null
-							||
-							wormhole.getUserDatabase().getKnownNonNull(sender).getSentRequests().get(player.getUniqueId()) != null
-									&&
-									wormhole.getUserDatabase().getKnownNonNull(sender).getSentRequests().get(player.getUniqueId()).isValid()
-					|| wormhole.getUserDatabase().getKnownNonNull(sender).isBlocked(sender)
-			);
+			TeleportManager manager = wormhole.getTeleportManager();
+			players.removeIf(player -> manager.hasRequested(sender, player));
 			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent("tpa", sender, players);
 			Bukkit.getServer().getPluginManager().callEvent(e);
 			List<String> finalList = new ArrayList<>();

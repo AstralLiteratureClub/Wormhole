@@ -1,10 +1,33 @@
+# This clears the table and cannot be reversed!
+# Delete all data
+deleted-all-data: false
+
 # Don't edit
 version: 1.0.0
 # Debug mode enables teleporting to self
-debug: false
+debug: true
 
 # request-time = 1000 millis = 1 sec
-settings:
-  request-time: 30000
-  teleport-time: 0
-  cancel-on-teleport-movement: true
+request-time: 30s
+
+# the time it takes to teleport to the player.
+teleport-time: 5s
+# Should the movement of player cancel the teleportation?
+cancel-on-movement: true
+# The amount player can move if cancel-on-movement is enabled.
+max-movement-distance: 0.05
+
+# Example
+example_database:
+  type: mysql
+  user: A7j1/(32n(2b32j1%&sdkljn.,&2h4m21/n34jk2l1nb
+  password: password
+  url: jdbc:mysql://127.0.0.1:3306/mc_database
+
+# Supported database types:
+# - MySQL
+database:
+  type: MySQL
+  user: root
+  password: PASSWORD
+  url: CONNECTION_URL

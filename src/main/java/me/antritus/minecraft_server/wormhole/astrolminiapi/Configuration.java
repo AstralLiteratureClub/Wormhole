@@ -1,6 +1,6 @@
 package me.antritus.minecraft_server.wormhole.astrolminiapi;
 
-import com.google.gson.internal.bind.ObjectTypeAdapter;
+import me.antritus.minecraft_server.wormhole.Wormhole;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -33,6 +33,7 @@ public class Configuration extends YamlConfiguration {
 		try (final InputStream inputStream = javaPlugin.getResource(filename)) {
 			if (inputStream != null) {
 				try (final Reader reader = new InputStreamReader(Objects.requireNonNull(inputStream))) {
+					System.out.println("Reader");
 					defaultConfig.load(reader);
 				} catch (InvalidConfigurationException e) {
 					throw new RuntimeException(e);
@@ -81,7 +82,7 @@ public class Configuration extends YamlConfiguration {
 	}
 
 	public void load() throws IOException, InvalidConfigurationException {
-		this.load(file);
+		reload();
 	}
 
 	public void setIfNull(String key, Object obj){

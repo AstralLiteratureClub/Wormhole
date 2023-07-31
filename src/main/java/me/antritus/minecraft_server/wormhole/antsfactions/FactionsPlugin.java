@@ -1,37 +1,43 @@
 package me.antritus.minecraft_server.wormhole.antsfactions;
 
+import com.google.common.base.Charsets;
+import me.antritus.minecraft_server.wormhole.Wormhole;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.Configuration;
 import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
 public abstract class FactionsPlugin extends JavaPlugin {
-	private final CoreSettings coreSettings;
+	private CoreSettings coreSettings;
 	private final MessageManager messageManager;
-	private final Configuration config;
+	private Configuration config;
 	private final CoreDatabase coreDatabase;
 
 	protected FactionsPlugin() {
-		config = new Configuration(this, "config.yml");
-		coreSettings = new CoreSettings(this);
 		coreDatabase = new CoreDatabase(this);
 		messageManager = new MessageManager(this);
 	}
 
+	@Override
 	public void onEnable(){
-		try {
-			config.load();
-		} catch (IOException | InvalidConfigurationException e) {
-			throw new RuntimeException(e);
-		}
+		config = new Configuration(this, "config.yml");
+		config.reload();
 		config.setIfNull("database.type", "mysql");
 		config.setIfNull("database.password", "_123_!_Bad_Password_!_123_");
 		config.setIfNull("database.user", "root");
 		config.setIfNull("database.url", "https://database.example.com/db/wormhole");
 		config.setIfNull("version", "version");
+		try {
+			config.save();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		coreSettings = new CoreSettings(this);
 		coreSettings.load(new SimpleProperty<>("database-type", getConfig().getString("database.type", "database.type")));
 		coreSettings.load(new SimpleProperty<>("database-password", getConfig().getString("database.password", "database.password")));
 		coreSettings.load(new SimpleProperty<>("database-user", getConfig().getString("database.user", "database.user")));
@@ -48,14 +54,20 @@ public abstract class FactionsPlugin extends JavaPlugin {
 				coreSettings.get("version").setValueObj(getPluginMeta().getVersion());
 				// noinspection UnstableApiUsage
 				config.set("version", getPluginMeta().getVersion());
+				try {
+					config.save();
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
 			}
 		}
-
-		try {
-			config.save();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		enable();
+	}
+	@Override
+	public void onDisable(){
+		startDisable();
+		coreDatabase.closeConnection();
+		disable();
 	}
 
 	public void enableDatabase(){
@@ -65,6 +77,7 @@ public abstract class FactionsPlugin extends JavaPlugin {
 	public abstract void updateConfig(@Nullable String oldVersion, String newVersion);
 
 	public abstract void enable();
+	public abstract void startDisable();
 	public abstract void disable();
 
 	public CoreSettings getCoreSettings() {
@@ -83,5 +96,19 @@ public abstract class FactionsPlugin extends JavaPlugin {
 
 	public CoreDatabase getCoreDatabase() {
 		return coreDatabase;
+	}
+
+	public void reloadConfig() {
+		if (config == null) {
+			config = new Configuration(this, "config.yml");
+			config.reload();
+			return;
+		}
+		config.reload();
+	}
+
+	@Override
+	public void saveDefaultConfig() {
+		config.reload();
 	}
 }

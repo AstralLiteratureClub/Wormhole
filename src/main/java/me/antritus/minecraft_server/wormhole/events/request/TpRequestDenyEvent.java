@@ -1,6 +1,6 @@
 package me.antritus.minecraft_server.wormhole.events.request;
 
-import me.antritus.minecraft_server.wormhole.manager.TeleportRequest;
+import me.antritus.minecraft_server.wormhole.api.Request;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +25,7 @@ public class TpRequestDenyEvent extends TpRequestAcceptEvent{
 	 * @param requested requested player
 	 * @param request requested player
 	 */
-	public TpRequestDenyEvent(@NotNull Player who, @NotNull Player requested, @NotNull TeleportRequest request) {
+	public TpRequestDenyEvent(@NotNull Player who, @NotNull Player requested, @NotNull Request request) {
 		super(who, requested, request);
 	}
 }

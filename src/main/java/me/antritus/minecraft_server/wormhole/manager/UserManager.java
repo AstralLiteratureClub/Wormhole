@@ -11,9 +11,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
  * @since 1.0.0-snapshot
  * @author antritus
  */
-public class TeleportManager implements Listener {
+public class UserManager implements Listener {
 	private final Wormhole main;
-	public TeleportManager(Wormhole main) {
+	public UserManager(Wormhole main) {
 		this.main = main;
 	}
 	public void onEnable(){
@@ -54,11 +54,5 @@ public class TeleportManager implements Listener {
 		user.online = false;
 		main.getUserDatabase().save(user);
 		main.getUserDatabase().unload(event.getPlayer());
-	}
-
-	public void sendRequest(User user, User requestUser, TeleportRequest request) {
-		user.getSentRequests().put(requestUser.getUniqueId(), request);
-		requestUser.getReceivedRequests().put(user.getUniqueId(), request);
-		new ASyncTeleportThread(main, request).run();
 	}
 }

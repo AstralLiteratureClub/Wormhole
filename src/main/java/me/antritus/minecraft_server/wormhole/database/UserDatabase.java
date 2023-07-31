@@ -20,18 +20,18 @@ import java.util.*;
 
 public class UserDatabase implements Listener {
 	@ShushIDE
-	private static final String CREATE_QUERY_USER = "CREATE TABLE IF NOT EXISTS users_core ("
+	private static final String CREATE_QUERY_USER = "CREATE TABLE IF NOT EXISTS wormhole_users ("
 			+ "uniqueId VARCHAR(36) NOT NULL, "
 			+ "enabled BOOLEAN, "
 			+ "blocked JSON, "
 			+ "PRIMARY KEY (uniqueId)"
 			+ ");";
 	@ShushIDE
-	private final String INSERT_QUERY_USER = "INSERT INTO users_core (uniqueId, enabled, blocked) VALUES (?, ?, ?)";
+	private final String INSERT_QUERY_USER = "INSERT INTO wormhole_users (uniqueId, enabled, blocked) VALUES (?, ?, ?)";
 	@ShushIDE
-	private final String UPDATE_QUERY_USER = "UPDATE users_core SET enabled = ?, blocked = ? WHERE uniqueId = ?";
+	private final String UPDATE_QUERY_USER = "UPDATE wormhole_users SET enabled = ?, blocked = ? WHERE uniqueId = ?";
 	@ShushIDE
-	private final String SELECT_QUERY_USER = "SELECT * FROM users_core WHERE uniqueId = ?";
+	private final String SELECT_QUERY_USER = "SELECT * FROM wormhole_users WHERE uniqueId = ?";
 	private final Map<UUID, User> cached = new HashMap<>();
 	private final Wormhole main;
 
@@ -76,9 +76,20 @@ public class UserDatabase implements Listener {
 		}
 	}
 
+	public void checkAndDropTable() {
+		boolean shouldDropTable = main.getConfig().getBoolean("delete-all-data", false);
+		if (shouldDropTable) {
+			try (Statement statement = main.getCoreDatabase().getConnection().createStatement()) {
+				statement.execute("DROP TABLE IF EXISTS wormhole_users");
+				main.getLogger().info("Table wormhole_users has been dropped.");
+			} catch (SQLException e) {
+				throw new RuntimeException("Failed to drop table wormhole_users.", e);
+			}
+		}
+	}
 	public void delete(User user) {
 		Connection connection = main.getCoreDatabase().getConnection();
-		String statementQuery = "DELETE FROM users_core WHERE uniqueId = ?";
+		String statementQuery = "DELETE FROM wormhole_users WHERE uniqueId = ?";
 		try (PreparedStatement statement = connection.prepareStatement(statementQuery)) {
 			statement.setString(1, user.getUniqueId().toString());
 			statement.executeUpdate();

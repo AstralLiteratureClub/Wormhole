@@ -4,6 +4,8 @@ import me.antritus.minecraft_server.wormhole.Wormhole;
 import me.antritus.minecraft_server.wormhole.antsfactions.IUser;
 import me.antritus.minecraft_server.wormhole.antsfactions.Property;
 import me.antritus.minecraft_server.wormhole.antsfactions.SimpleProperty;
+import me.antritus.minecraft_server.wormhole.api.Request;
+import me.antritus.minecraft_server.wormhole.api.TeleportManager;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -17,12 +19,10 @@ import java.util.*;
  */
 public class User implements IUser {
 	private final Map<String, SimpleProperty<?>> settings = new LinkedHashMap<>();
-	private final Map<UUID, TeleportRequest> requestsSent;
-	private final Map<UUID, TeleportRequest> requestsReceived;
 	private final List<String> blockedUsers;
 	private final Wormhole main;
 	private final UUID uniqueId;
-	private TeleportRequest latestRequest;
+	private Request latestRequest;
 	private final String name;
 	public boolean online;
 	public long lastOnline;
@@ -31,23 +31,12 @@ public class User implements IUser {
 		this(main, player.getUniqueId());
 	}
 	public User(@NotNull Wormhole main, @NotNull UUID uniqueId){
-		this.requestsSent = new LinkedHashMap<>();
-		this.requestsReceived = new LinkedHashMap<>();
 		this.blockedUsers = new ArrayList<>();
 		this.main = main;
 		this.uniqueId = uniqueId;
 		this.name = Bukkit.getOfflinePlayer(uniqueId).getName();
 	}
 
-	@NotNull
-	public Map<UUID, TeleportRequest> getSentRequests(){
-		return requestsSent;
-	}
-
-	@NotNull
-	public Map<UUID, TeleportRequest> getReceivedRequests(){
-		return requestsSent;
-	}
 
 	@NotNull
 	public Wormhole getMain(){
@@ -67,30 +56,20 @@ public class User implements IUser {
 		blockedUsers.remove(player.getUniqueId().toString());
 	}
 
-	public boolean findMatch(TeleportRequest request, boolean sent) {
-		if (sent){
-			return requestsSent.values().stream().anyMatch(tp->tp.equals(request));
-		}
-		return requestsReceived.values().stream().anyMatch(tp->tp.equals(request));
-	}
-
 	public List<String> blocked(){
 		return blockedUsers;
 	}
 
 	public void findLatest(){
-		List<TeleportRequest> requests = new ArrayList<>(requestsReceived.values().stream().toList());
-
-		requests.sort((a, b) -> {
-			if (a.getTimeEnd() > b.getTimeEnd()) {
-				return -1; // a should be sorted before b
-			} else if (a.getTimeEnd() < b.getTimeEnd()) {
-				return 1; // b should be sorted before a
-			} else {
-				return 0; // the order of a and b doesn't matter
-			}
-		});
-		latestRequest = requests.get(0);
+		TeleportManager manager = main.getTeleportManager();
+		HashMap<UUID, Request> requests = manager.getAllRequests(uniqueId);
+		if (requests.isEmpty()){
+			latestRequest = null;
+			return;
+		}
+		List<Request> requestList = new ArrayList<>(requests.values());
+		requestList.sort((a, b) -> Long.compare(b.getEnd(), a.getEnd()));
+		latestRequest = requestList.get(0);
 	}
 
 	@Override
@@ -118,7 +97,7 @@ public class User implements IUser {
 		return uniqueId;
 	}
 
-	public TeleportRequest getLatestRequest() {
+	public Request getLatestRequest() {
 		return latestRequest;
 	}
 

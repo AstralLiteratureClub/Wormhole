@@ -11,7 +11,6 @@ import me.antritus.minecraft_server.wormhole.manager.User;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.checkerframework.checker.lock.qual.GuardSatisfied;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
