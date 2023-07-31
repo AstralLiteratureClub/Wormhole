@@ -1,5 +1,6 @@
 package me.antritus.minecraft_server.wormhole.events;
 
+import me.antritus.minecraft_server.wormhole.Wormhole;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
@@ -19,8 +20,8 @@ public class TpPlayerAfterParseEvent extends TpAbstractEvent implements Cancella
 	 * @param who who requested
 	 * @param requested requested player
 	 */
-	public TpPlayerAfterParseEvent(String command, @NotNull Player who, @NotNull Player requested) {
-		super(who, who);
+	public TpPlayerAfterParseEvent(@NotNull Wormhole wormhole, @NotNull String command, @NotNull Player who, @NotNull Player requested) {
+		super(wormhole, who, who);
 		this.requested = requested;
 		this.command =command;
 	}

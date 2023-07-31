@@ -2,17 +2,23 @@ package me.antritus.minecraft_server.wormhole.events.request;
 
 import me.antritus.minecraft_server.wormhole.Wormhole;
 import me.antritus.minecraft_server.wormhole.api.Request;
+import me.antritus.minecraft_server.wormhole.events.TpAbstractOfflineEvent;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * This event is fired when deny is about to happen
- * @author antritus
- * @since 1.0.0-snapshot
- */
-public class TpRequestDenyEvent extends TpRequestAcceptEvent{
+public class TpRequestRanOutEvent extends TpAbstractOfflineEvent {
 	private static final HandlerList HANDLERS = new HandlerList();
+
+	/**
+	 * @param who       who requested
+	 * @param requested requested player
+	 * @param request   request
+	 */
+	public TpRequestRanOutEvent(@NotNull Wormhole wormhole, @NotNull OfflinePlayer who, @NotNull OfflinePlayer requested, @NotNull Request request) {
+		super(wormhole, who, requested, request);
+	}
 
 	public static HandlerList getHandlerList(){
 		return HANDLERS;
@@ -20,13 +26,5 @@ public class TpRequestDenyEvent extends TpRequestAcceptEvent{
 	@Override
 	public @NotNull HandlerList getHandlers() {
 		return HANDLERS;
-	}
-	/**
-	 * @param who       who requested
-	 * @param requested requested player
-	 * @param request requested player
-	 */
-	public TpRequestDenyEvent(@NotNull Wormhole wormhole, @NotNull Player who, @NotNull Player requested, @NotNull Request request) {
-		super(wormhole, who, requested, request);
 	}
 }

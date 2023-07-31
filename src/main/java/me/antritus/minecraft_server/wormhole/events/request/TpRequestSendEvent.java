@@ -1,5 +1,6 @@
 package me.antritus.minecraft_server.wormhole.events.request;
 
+import me.antritus.minecraft_server.wormhole.Wormhole;
 import me.antritus.minecraft_server.wormhole.events.TpAbstractEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -23,8 +24,8 @@ public class TpRequestSendEvent extends TpAbstractEvent implements Cancellable {
 	 * @param requested requested
 	 * @param requestTime how long is the request
 	 */
-	public TpRequestSendEvent(@NotNull Player who, @NotNull Player requested, long requestTime) {
-		super(who, requested);
+	public TpRequestSendEvent(@NotNull Wormhole wormhole, @NotNull Player who, @NotNull Player requested, long requestTime) {
+		super(wormhole, who, requested);
 		this.requested = requested;
 		this.requestTime = requestTime;
 	}

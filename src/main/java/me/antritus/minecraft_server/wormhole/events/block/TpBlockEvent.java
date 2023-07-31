@@ -1,5 +1,6 @@
 package me.antritus.minecraft_server.wormhole.events.block;
 
+import me.antritus.minecraft_server.wormhole.Wormhole;
 import me.antritus.minecraft_server.wormhole.events.TpAbstractEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -21,9 +22,9 @@ public class TpBlockEvent extends TpAbstractEvent {
 
 	/**
 	 * @param who       who requested
-	 * @param requested requested player
+	 * @param blocked requested player
 	 */
-	public TpBlockEvent(Player who, Player requested) {
-		super(who, requested);
+	public TpBlockEvent(@NotNull Wormhole wormhole, @NotNull Player who, @NotNull Player blocked) {
+		super(wormhole, who, blocked);
 	}
 }
