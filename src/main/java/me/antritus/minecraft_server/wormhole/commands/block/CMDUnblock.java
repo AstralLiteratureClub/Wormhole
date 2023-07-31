@@ -48,7 +48,7 @@ public class CMDUnblock extends CoreCommand {
 			Wormhole.sendMessage(player, args[0], "unblock.unknown-player", "%command%=tpunblock <player>");
 			return true;
 		}
-		TpPlayerAfterParseEvent parseEvent = new TpPlayerAfterParseEvent("tpunblock", player, other);
+		TpPlayerAfterParseEvent parseEvent = new TpPlayerAfterParseEvent(wormhole, "tpunblock", player, other);
 		parseEvent.callEvent();
 		if (parseEvent.isCancelled()){
 			return true;
@@ -62,15 +62,13 @@ public class CMDUnblock extends CoreCommand {
 		Wormhole.sendMessage(player, other, "unblock.unblocked");
 		return true;
 	}
-
-	@Override
 	public @NotNull List<String> tabComplete(@NotNull CommandSender commandSender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
 		if (args.length == 1) {
 			Player sender = (Player) commandSender;
 			List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
 			players.remove(sender);
 			players.removeIf(player -> wormhole.getUserDatabase().getKnownNonNull(sender).isBlocked(player));
-			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent("tpblock", sender, players);
+			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent(wormhole, "tpunblock", sender, players);
 			Bukkit.getServer().getPluginManager().callEvent(e);
 			List<String> finalList = new ArrayList<>();
 			for (Player player : players) {

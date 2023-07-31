@@ -51,7 +51,7 @@ public class CMDRequests extends CoreCommand {
 				Wormhole.sendMessage(player, other, "commands.tprequests.no-perms-check-others");
 				return true;
 			}
-			TpPlayerAfterParseEvent parseEvent = new TpPlayerAfterParseEvent("tprequests", player, other);
+			TpPlayerAfterParseEvent parseEvent = new TpPlayerAfterParseEvent(wormhole, "tprequests", player, other);
 			parseEvent.callEvent();
 			if (parseEvent.isCancelled()){
 				return true;
@@ -105,7 +105,7 @@ public class CMDRequests extends CoreCommand {
 				return Collections.singletonList("");
 			}
 			List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
-			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent("tprequests", sender, players);
+			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent(wormhole,"tprequests", sender, players);
 			Bukkit.getServer().getPluginManager().callEvent(e);
 			List<String> finalList = new ArrayList<>();
 			for (Player player : players) {

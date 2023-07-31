@@ -59,7 +59,7 @@ public class CMDDeny extends CoreCommand {
 				return true;
 			}
 			TeleportManager teleportManager = wormhole.getTeleportManager();
-			TpRequestAcceptEvent event = new TpRequestAcceptEvent(player,
+			TpRequestAcceptEvent event = new TpRequestAcceptEvent(wormhole, player,
 					Objects.requireNonNull(sender.getPlayer()),
 					request);
 			event.callEvent();
@@ -84,7 +84,7 @@ public class CMDDeny extends CoreCommand {
 				return true;
 			}
 		}
-		TpPlayerAfterParseEvent parseEvent = new TpPlayerAfterParseEvent("tpdeny", player, Objects.requireNonNull(sender.getPlayer()));
+		TpPlayerAfterParseEvent parseEvent = new TpPlayerAfterParseEvent(wormhole, "tpdeny", player, Objects.requireNonNull(sender.getPlayer()));
 		parseEvent.callEvent();
 		if (parseEvent.isCancelled()){
 			return true;
@@ -99,7 +99,7 @@ public class CMDDeny extends CoreCommand {
 		if (request == null) {
 			return true;
 		}
-		TpRequestAcceptEvent event = new TpRequestAcceptEvent(player, sender.getPlayer(), request);
+		TpRequestAcceptEvent event = new TpRequestAcceptEvent(wormhole, player, sender.getPlayer(), request);
 		event.callEvent();
 		if (event.isCancelled()){
 			return true;
@@ -120,7 +120,7 @@ public class CMDDeny extends CoreCommand {
 			players.remove(sender);
 			TeleportManager manager = wormhole.getTeleportManager();
 			players.removeIf(player -> !manager.hasRequested(sender, player));
-			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent("tpaccept", sender, players);
+			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent(wormhole, "tpaccept", sender, players);
 			Bukkit.getServer().getPluginManager().callEvent(e);
 			List<String> finalList = new ArrayList<>();
 			for (Player player : players) {

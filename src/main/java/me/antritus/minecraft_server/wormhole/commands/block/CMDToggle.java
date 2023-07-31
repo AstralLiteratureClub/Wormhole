@@ -4,6 +4,7 @@ import me.antritus.minecraft_server.wormhole.Wormhole;
 import me.antritus.minecraft_server.wormhole.antsfactions.MessageManager;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.ColorUtils;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.CoreCommand;
+import me.antritus.minecraft_server.wormhole.events.block.TpToggleEvent;
 import me.antritus.minecraft_server.wormhole.manager.User;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -37,6 +38,8 @@ public class CMDToggle extends CoreCommand {
 		if (user == null){
 			throw new RuntimeException("Could not get user of: "+ player.getName());
 		}
+		TpToggleEvent event = new TpToggleEvent(wormhole, player);
+		event.callEvent();
 		user.isAcceptingRequests = !user.isAcceptingRequests;
 		messageManager.message(player, "toggle."+user.isAcceptingRequests, "%command%=tptoggle");
 		return true;

@@ -15,7 +15,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import javax.imageio.stream.ImageInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -54,7 +53,7 @@ public class CMDTpa extends CoreCommand {
 				return true;
 			}
 		}
-		TpPlayerAfterParseEvent parseEvent = new TpPlayerAfterParseEvent("tpa", player, requested);
+		TpPlayerAfterParseEvent parseEvent = new TpPlayerAfterParseEvent(wormhole, "tpa", player, requested);
 		parseEvent.callEvent();
 		if (parseEvent.isCancelled()){
 			return true;
@@ -81,7 +80,7 @@ public class CMDTpa extends CoreCommand {
 			return true;
 		} else {
 			Request request = new Request(wormhole, player.getUniqueId(), requested.getUniqueId());
-			TpRequestSendEvent event = new TpRequestSendEvent(player, requested, request.getEnd());
+			TpRequestSendEvent event = new TpRequestSendEvent(wormhole, player, requested, request.getEnd());
 			event.callEvent();
 			if (event.isCancelled()){
 				return true;
@@ -101,7 +100,7 @@ public class CMDTpa extends CoreCommand {
 			players.remove(sender);
 			TeleportManager manager = wormhole.getTeleportManager();
 			players.removeIf(player -> manager.hasRequested(sender, player));
-			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent("tpa", sender, players);
+			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent(wormhole, "tpa", sender, players);
 			Bukkit.getServer().getPluginManager().callEvent(e);
 			List<String> finalList = new ArrayList<>();
 			for (Player player : players) {

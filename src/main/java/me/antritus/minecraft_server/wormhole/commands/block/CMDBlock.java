@@ -7,6 +7,7 @@ import me.antritus.minecraft_server.wormhole.astrolminiapi.ColorUtils;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.CoreCommand;
 import me.antritus.minecraft_server.wormhole.events.PlayerTabCompleteRequestEvent;
 import me.antritus.minecraft_server.wormhole.events.TpPlayerAfterParseEvent;
+import me.antritus.minecraft_server.wormhole.events.block.TpBlockEvent;
 import me.antritus.minecraft_server.wormhole.manager.User;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -50,7 +51,7 @@ public class CMDBlock extends CoreCommand {
 			Wormhole.sendMessage(player, args[0], "block.unknown-player", "%command%=tpblock <player>");
 			return true;
 		}
-		TpPlayerAfterParseEvent parseEvent = new TpPlayerAfterParseEvent("tpblock", player, other);
+		TpPlayerAfterParseEvent parseEvent = new TpPlayerAfterParseEvent(wormhole, "tpblock", player, other);
 		parseEvent.callEvent();
 		if (parseEvent.isCancelled()){
 			return true;
@@ -59,7 +60,8 @@ public class CMDBlock extends CoreCommand {
 			Wormhole.sendMessage(player, other, "block.already", "%command%=tpblock <player>");
 			return true;
 		}
-
+		TpBlockEvent event = new TpBlockEvent(wormhole, player, other);
+		event.callEvent();
 		user.block(other);
 		Wormhole.sendMessage(player, other, "block.blocked");
 		return true;
@@ -72,7 +74,7 @@ public class CMDBlock extends CoreCommand {
 			List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
 			players.remove(sender);
 			players.removeIf(player -> wormhole.getUserDatabase().getKnownNonNull(sender).isBlocked(player));
-			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent("tpblock", sender, players);
+			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent(wormhole, "tpblock", sender, players);
 			Bukkit.getServer().getPluginManager().callEvent(e);
 			List<String> finalList = new ArrayList<>();
 			for (Player player : players) {
