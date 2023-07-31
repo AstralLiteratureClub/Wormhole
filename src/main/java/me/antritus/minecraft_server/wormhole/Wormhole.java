@@ -4,7 +4,6 @@ import me.antritus.minecraft_server.wormhole.antsfactions.*;
 import me.antritus.minecraft_server.wormhole.api.TeleportManager;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.Configuration;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.CoreCommand;
-import me.antritus.minecraft_server.wormhole.commands.CMDShrug;
 import me.antritus.minecraft_server.wormhole.commands.admin.CMDReload;
 import me.antritus.minecraft_server.wormhole.commands.block.CMDBlock;
 import me.antritus.minecraft_server.wormhole.commands.block.CMDToggle;
@@ -59,7 +58,6 @@ public class Wormhole extends FactionsPlugin  {
 		userManager = new UserManager(this);
 		userManager.onEnable();
 		getServer().getPluginManager().registerEvents(userManager, this);
-		CoreCommand.registerCommand(this, "shrug", new CMDShrug(this));
 		CoreCommand.registerCommand(this, "tpa", new CMDTpa(this));
 		CoreCommand.registerCommand(this, "tpcancel", new CMDCancel(this));
 		CoreCommand.registerCommand(this, "tpaccept", new CMDAccept(this));
