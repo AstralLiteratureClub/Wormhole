@@ -27,6 +27,12 @@ public abstract class TpAbstractOfflineEvent extends WormholeEvent {
 		this.requested = requested;
 		this.request = request;
 	}
+	public TpAbstractOfflineEvent(boolean aSync, @NotNull Wormhole wormhole, @NotNull OfflinePlayer who, @NotNull OfflinePlayer requested, @NotNull Request request) {
+		super(aSync, wormhole);
+		this.player = who;
+		this.requested = requested;
+		this.request = request;
+	}
 	@NotNull
 
 	public OfflinePlayer getPlayer() {

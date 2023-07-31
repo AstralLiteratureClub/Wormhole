@@ -5,6 +5,10 @@ import me.antritus.minecraft_server.wormhole.manager.User;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
 public class UserSaveEvent extends UserEvent {
 	private static final HandlerList HANDLER_LIST = new HandlerList();
 

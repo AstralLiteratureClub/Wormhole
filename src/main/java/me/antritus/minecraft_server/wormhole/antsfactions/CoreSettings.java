@@ -6,6 +6,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
+
 public class CoreSettings implements ISettings{
 	private final HashMap<String, SimpleProperty<?>> properties = new HashMap<>();
 	private final Configuration config;

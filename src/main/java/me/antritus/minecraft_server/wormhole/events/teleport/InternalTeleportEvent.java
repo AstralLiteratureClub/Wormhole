@@ -7,6 +7,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
 public abstract class InternalTeleportEvent extends WormholeEvent {
 	private final Player player;
 	private final Player to;

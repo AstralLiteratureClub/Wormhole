@@ -6,6 +6,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
 public class TpBeginEvent extends InternalCancellableTeleportEvent {
 	public TpBeginEvent(boolean aSync, @NotNull Wormhole wormhole, @NotNull Player player, @NotNull Player to, @NotNull Teleport teleport) {
 		super(aSync, wormhole, player, to, teleport);

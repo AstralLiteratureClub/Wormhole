@@ -4,6 +4,10 @@ import me.antritus.minecraft_server.wormhole.Wormhole;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
 public class WormholeReloadEvent extends WormholeEvent{
 	private static final HandlerList HANDLERS = new HandlerList();
 

@@ -7,8 +7,10 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.BinaryOperator;
-
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
 public class TpEvent extends InternalTeleportEvent implements Cancellable {
 	private static final HandlerList HANDLERS = new HandlerList();
 

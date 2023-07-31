@@ -9,7 +9,8 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * This event is fired when player accepts teleport
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
  */
 public class TpRequestAcceptEvent extends TpAbstractEvent implements Cancellable {
 	private static final HandlerList HANDLERS = new HandlerList();

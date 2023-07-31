@@ -9,10 +9,14 @@ import org.bukkit.event.Event;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
 public abstract class UserEvent extends WormholeEvent {
 	private final User user;
 	public UserEvent(@NotNull Wormhole wormhole, @NotNull User user){
-		super(wormhole);
+		super(true, wormhole);
 		this.user = user;
 	}
 

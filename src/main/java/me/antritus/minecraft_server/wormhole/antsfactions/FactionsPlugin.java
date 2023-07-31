@@ -12,6 +12,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
 public abstract class FactionsPlugin extends JavaPlugin {
 	private CoreSettings coreSettings;
 	private final MessageManager messageManager;

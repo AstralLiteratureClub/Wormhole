@@ -4,6 +4,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
+
 public class CoreDatabase {
 	private final FactionsPlugin main;
 

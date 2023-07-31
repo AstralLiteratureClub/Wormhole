@@ -8,6 +8,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
 public class TpRequestRanOutEvent extends TpAbstractOfflineEvent {
 	private static final HandlerList HANDLERS = new HandlerList();
 
@@ -17,7 +21,7 @@ public class TpRequestRanOutEvent extends TpAbstractOfflineEvent {
 	 * @param request   request
 	 */
 	public TpRequestRanOutEvent(@NotNull Wormhole wormhole, @NotNull OfflinePlayer who, @NotNull OfflinePlayer requested, @NotNull Request request) {
-		super(wormhole, who, requested, request);
+		super(true, wormhole, who, requested, request);
 	}
 
 	public static HandlerList getHandlerList(){

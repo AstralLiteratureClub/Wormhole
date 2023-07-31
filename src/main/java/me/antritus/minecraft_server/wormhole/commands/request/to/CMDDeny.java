@@ -119,7 +119,7 @@ public class CMDDeny extends CoreCommand {
 			List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
 			players.remove(sender);
 			TeleportManager manager = wormhole.getTeleportManager();
-			players.removeIf(player -> !manager.hasRequested(sender, player));
+			players.removeIf(player -> manager.hasRequested(sender, player));
 			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent(wormhole, "tpaccept", sender, players);
 			Bukkit.getServer().getPluginManager().callEvent(e);
 			List<String> finalList = new ArrayList<>();

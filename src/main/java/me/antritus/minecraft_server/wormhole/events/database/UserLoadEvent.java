@@ -5,6 +5,10 @@ import me.antritus.minecraft_server.wormhole.manager.User;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
 public class UserLoadEvent extends UserEvent {
 
 	public UserLoadEvent(@NotNull Wormhole wormhole, @NotNull User user) {

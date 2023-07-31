@@ -4,6 +4,10 @@ import me.antritus.minecraft_server.wormhole.Wormhole;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
 public abstract class WormholeEvent extends Event {
 	private final Wormhole wormhole;
 	public WormholeEvent(@NotNull Wormhole wormhole) {

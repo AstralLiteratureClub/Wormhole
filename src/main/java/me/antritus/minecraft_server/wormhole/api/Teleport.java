@@ -6,6 +6,10 @@ import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
 public class Teleport {
 	private final Wormhole wormhole;
 	protected final Player who;

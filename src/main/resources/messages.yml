@@ -50,25 +50,37 @@ toggle:
   false: "%prefix% <green>You will <red>no longer</red> accept new requests from unblocked players."
 
 accept:
-  no-requests: "%prefix% <red>You have no pending teleport requests."
+  no-requests: "%prefix% <red>You do not have any pending received out requests."
   latest:
     sender-null: "%prefix% <red>You have no pending teleport requests."
   manual:
     unknown-player: "%prefix% <red>Unknown player! <gray>%who%</gray> is offline or has not played before."
     self: "%prefix% <red>You cannot accept your own teleport request."
-    no-request: "%prefix% <red>You do not have teleport request from <white>%who%</white>."
+    no-request: "%prefix% <red>You do not have a teleport request from <white>%who%</white>."
   accept-sender: "%prefix% <green>Teleporting to <gray>%who%</gray>- soon."
-  accept-requested: "%prefix% <green><gray>%who%</gray> has accepted the teleport request."
+  accept-requested: "%prefix% <green>Accepted teleport request of <gray>%who%</gray>."
 deny:
+  no-requests: "%prefix% <red>You do not have any pending received out requests."
   latest:
     no-requests: "%prefix% <red>You have no pending teleport requests."
     sender-null: "%prefix% <red>You have no pending teleport requests."
   manual:
     unknown-player: "%prefix% <red>Unknown player! <gray>%who%</gray> is offline or has not played before."
     self: "%prefix% <red>You cannot deny your own teleport request."
-    no-request: "%prefix% <red>You do not have teleport request from <white>%who%</white>."
+    no-request: "%prefix% <red>You do not have a teleport request from <white>%who%</white>."
   deny-requested: "%prefix% <green>Denied the teleport request of <gray>%who%</gray>"
   deny-sender: "%prefix% <green><gray>%who%</gray> has been denied your teleport request."
+cancel:
+  no-requests: "%prefix% <red>You do not have any pending sent out requests."
+  latest:
+    no-requests: "%prefix% <red>You have no pending teleport requests."
+    sender-null: "%prefix% <red>You have no pending teleport requests."
+  manual:
+    unknown-player: "%prefix% <red>Unknown player! <gray>%who%</gray> is offline or has not played before."
+    self: "%prefix% <red>You cannot cancel your own teleport requests."
+    no-request: "%prefix% <red>You do not have a teleport request from <white>%who%</white>."
+  cancel-sender: "%prefix% <green>Canceled request to <gray>%who%</gray>"
+  cancel-requested: "%prefix% <green><gray>%who%</gray> has canceled their teleport request."
 
 requests:
   others:

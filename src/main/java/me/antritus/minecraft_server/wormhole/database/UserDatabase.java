@@ -19,6 +19,10 @@ import org.json.simple.parser.ParseException;
 import java.sql.*;
 import java.util.*;
 
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
 public class UserDatabase implements Listener {
 	@ShushIDE
 	private static final String CREATE_QUERY_USER = "CREATE TABLE IF NOT EXISTS wormhole_users ("
@@ -146,7 +150,7 @@ public class UserDatabase implements Listener {
 		return list;
 	}
 
-	public void save(User user) {
+	public void save(@NotNull User user) {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -202,6 +206,45 @@ public class UserDatabase implements Listener {
 							event.callAsync(main);
 							save(user);
 
+						}
+					}
+				} catch (SQLException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}.runTaskAsynchronously(main);
+	}
+
+	public void join(UUID uuid) {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				Connection connection = main.getCoreDatabase().getConnection();
+				try (PreparedStatement statement = connection.prepareStatement(SELECT_QUERY_USER)) {
+					statement.setString(1, uuid.toString());
+					try (ResultSet resultSet = statement.executeQuery()) {
+						if (resultSet.next()) {
+							User user = new User(main, uuid);
+							UserLoadEvent event = new UserLoadEvent(main, user);
+							event.callAsync(main);
+							user.isAcceptingRequests = resultSet.getBoolean("enabled");
+							user.blocked().addAll(fromJSON(resultSet.getString("blocked")));
+							user.lastOnline = -1;
+							user.online = true;
+							save(user);
+							cached.put(user.getUniqueId(), user);
+						} else {
+							User user = new User(main, uuid);
+
+							UserLoadEvent event = new UserLoadEvent(main, user);
+							event.callAsync(main);
+
+							user.setting("isNew", true);
+							user.isAcceptingRequests = true;
+							user.lastOnline = -1;
+							user.online = true;
+							cached.put(user.getUniqueId(), user);
+							save(user);
 						}
 					}
 				} catch (SQLException e) {

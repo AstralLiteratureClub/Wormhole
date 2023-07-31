@@ -6,6 +6,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
 public class CMDShrug extends CoreCommand {
 	public CMDShrug(Wormhole wormhole) {
 		super(wormhole, "shrug");

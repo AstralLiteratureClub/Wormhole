@@ -5,5 +5,5 @@ package me.antritus.minecraft_server.wormhole.commands.admin;
  * @since 1.0.0-snapshot
  */
 public class CMDReset {
-	//todo
+	// todo
 }

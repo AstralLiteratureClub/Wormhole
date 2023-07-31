@@ -6,6 +6,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
 public class TimeFormatter {
 	public static void main(String[] args) {
 		String input = "1s2m";

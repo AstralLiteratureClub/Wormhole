@@ -23,6 +23,7 @@ public class User implements IUser {
 	private final Wormhole main;
 	private final UUID uniqueId;
 	private Request latestRequest;
+	private Request latestSentRequest;
 	private final String name;
 	public boolean online;
 	public long lastOnline;
@@ -67,7 +68,7 @@ public class User implements IUser {
 
 	public void findLatest(){
 		TeleportManager manager = main.getTeleportManager();
-		HashMap<UUID, Request> requests = manager.getAllRequests(uniqueId);
+		HashMap<UUID, Request> requests = manager.getAllReceivedRequests(uniqueId);
 		if (requests.isEmpty()){
 			latestRequest = null;
 			return;
@@ -75,6 +76,21 @@ public class User implements IUser {
 		List<Request> requestList = new ArrayList<>(requests.values());
 		requestList.sort((a, b) -> Long.compare(b.getEnd(), a.getEnd()));
 		latestRequest = requestList.get(0);
+	}
+	public void findLatestSent(){
+		TeleportManager manager = main.getTeleportManager();
+		HashMap<UUID, Request> requests = manager.getAllRequests(uniqueId);
+		if (requests.isEmpty()){
+			latestSentRequest = null;
+			return;
+		}
+		List<Request> requestList = new ArrayList<>(requests.values());
+		requestList.sort((a, b) -> Long.compare(b.getEnd(), a.getEnd()));
+		latestSentRequest = requestList.get(0);
+	}
+
+	public Request getLatestSentRequest() {
+		return latestSentRequest;
 	}
 
 	@Override

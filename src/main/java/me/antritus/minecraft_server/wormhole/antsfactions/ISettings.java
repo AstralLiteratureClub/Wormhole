@@ -4,6 +4,10 @@ import me.antritus.minecraft_server.wormhole.astrolminiapi.Configuration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
 public interface ISettings {
 	@NotNull
 	String name();

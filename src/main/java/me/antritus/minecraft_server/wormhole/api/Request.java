@@ -4,6 +4,10 @@ import me.antritus.minecraft_server.wormhole.Wormhole;
 
 import java.util.UUID;
 
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
 public class Request {
 	protected final UUID whoAsked;
 	protected final UUID requested;

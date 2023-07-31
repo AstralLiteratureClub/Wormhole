@@ -5,6 +5,10 @@ import me.antritus.minecraft_server.wormhole.astrolminiapi.CoreCommand;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
 public class CMDBlocked extends CoreCommand {
 	protected CMDBlocked(Wormhole wormhole) {
 		super(wormhole, "tpblocked");

@@ -23,6 +23,8 @@ import java.util.*;
  * Removing some of the methods that allow 1.8 use it is possible, and could
  * speed up the progress.
  * But removing the support for 1.8 is not supported by @antritus.
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
  */
 public class MessageManager {
 	private final MiniMessage miniMessage = MiniMessage.miniMessage();

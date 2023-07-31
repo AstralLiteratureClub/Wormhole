@@ -18,9 +18,14 @@ import org.jetbrains.annotations.Nullable;
 import java.text.DecimalFormat;
 import java.util.*;
 
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
 public class TeleportManager implements Listener {
 	private final Map<String, Request> requestMap = new LinkedHashMap<>();
 	private final Map<String, Teleport> teleportMap = new LinkedHashMap<>();
+	private final Map<String, Teleport> ignoreMap = new LinkedHashMap<>();
 	public final Wormhole wormhole;
 	private BukkitTask taskRequest;
 	private BukkitTask taskTeleport;
@@ -63,53 +68,55 @@ public class TeleportManager implements Listener {
 			public void run() {
 				List<String> deleteList = new ArrayList<>();
 				teleportMap.keySet().forEach(key -> {
-					Teleport teleport = teleportMap.get(key);
-					Location location = teleport.getWhoLocation();
-					Player player = teleport.getWho();
-					Player to = teleport.getTo();
-					if (!player.isOnline()) {
-						deleteList.add(key);
-						if (!to.isOnline()) {
-							return;
-						}
-						Wormhole.sendMessage(to, player, "teleporting.to.player-left");
-					} else {
-						if (!to.isOnline()) {
+					if (ignoreMap.get(key) == null) {
+						Teleport teleport = teleportMap.get(key);
+						Location location = teleport.getWhoLocation();
+						Player player = teleport.getWho();
+						Player to = teleport.getTo();
+						if (!player.isOnline()) {
 							deleteList.add(key);
-							Wormhole.sendMessage(player, to, "teleporting.to.offline-to");
-							return;
-						}
-					}
-					boolean moved = false;
-					if ((boolean) wormhole.getCoreSettings().getKnownNonNull("cancel-on-movement").getValue()) {
-						if (location.distance(player.getLocation()) > (double) wormhole.getCoreSettings().getKnownNonNull("max-movement-distance").getValue()) {
-							TpMoveEvent event = new TpMoveEvent(wormhole, player, to, teleport);
-							if (!event.isCancelled()) {
-								Wormhole.sendMessage(to, player, "teleporting.to.to-moved");
-								Wormhole.sendMessage(player, to, "teleporting.to.player-moved");
-								deleteList.add(key);
-								moved = true;
-							}
-						}
-					}
-					if (!moved) {
-						long end = teleport.getEnd() - System.currentTimeMillis();
-						if (end < 0) {
-							teleport(teleport.getWho(), teleport.to);
-							deleteList.add(key);
-						} else if (end < 5001) {
-							if (teleport.lastTick == -1) {
-								teleport.lastTick = System.currentTimeMillis();
-								String left = formatSeconds(millisecondsToSeconds(end));
-								Wormhole.sendMessage(player, to, "teleporting.to.second", "%seconds%=" + left);
+							if (!to.isOnline()) {
 								return;
 							}
-							long time = System.currentTimeMillis();
-							long diff = time - teleport.lastTick;
-							if (diff >= 950) {
-								teleport.lastTick = System.currentTimeMillis();
-								String left = formatSeconds(millisecondsToSeconds(end));
-								Wormhole.sendMessage(player, to, "teleporting.to.second", "%seconds%=" + left);
+							Wormhole.sendMessage(to, player, "teleporting.to.player-left");
+						} else {
+							if (!to.isOnline()) {
+								deleteList.add(key);
+								Wormhole.sendMessage(player, to, "teleporting.to.offline-to");
+								return;
+							}
+						}
+						boolean moved = false;
+						if ((boolean) wormhole.getCoreSettings().getKnownNonNull("cancel-on-movement").getValue()) {
+							if (location.distance(player.getLocation()) > (double) wormhole.getCoreSettings().getKnownNonNull("max-movement-distance").getValue()) {
+								TpMoveEvent event = new TpMoveEvent(wormhole, player, to, teleport);
+								if (!event.isCancelled()) {
+									Wormhole.sendMessage(to, player, "teleporting.to.to-moved");
+									Wormhole.sendMessage(player, to, "teleporting.to.player-moved");
+									deleteList.add(key);
+									moved = true;
+								}
+							}
+						}
+						if (!moved) {
+							long end = teleport.getEnd() - System.currentTimeMillis();
+							if (end < 0) {
+								teleport(teleport.getWho(), teleport.to);
+								ignoreMap.put(key, teleport);
+							} else if (end < 5001) {
+								if (teleport.lastTick == -1) {
+									teleport.lastTick = System.currentTimeMillis();
+									String left = formatSeconds(millisecondsToSeconds(end));
+									Wormhole.sendMessage(player, to, "teleporting.to.second", "%seconds%=" + left);
+									return;
+								}
+								long time = System.currentTimeMillis();
+								long diff = time - teleport.lastTick;
+								if (diff >= 950) {
+									teleport.lastTick = System.currentTimeMillis();
+									String left = formatSeconds(millisecondsToSeconds(end));
+									Wormhole.sendMessage(player, to, "teleporting.to.second", "%seconds%=" + left);
+								}
 							}
 						}
 					}
@@ -160,6 +167,7 @@ public class TeleportManager implements Listener {
 				TpEvent event = new TpEvent(true, wormhole, player, to, teleportMap.get(toId(player, to)));
 				event.callEvent();
 				teleportMap.remove(toId(player, to));
+				ignoreMap.remove(toId(player, to));
 				if (event.isCancelled()){
 					return;
 				}
@@ -245,7 +253,11 @@ public class TeleportManager implements Listener {
 	}
 
 	private String formatSeconds(double seconds) {
-		DecimalFormat decimalFormat = new DecimalFormat("0.00");
-		return decimalFormat.format(seconds);
+		DecimalFormat decimalFormat = new DecimalFormat("0.0");
+		String format = decimalFormat.format(seconds);
+		return format.equalsIgnoreCase("0.0") ? format+"*" : format;
+	}
+
+	public void cancelRequest(Request request) {
 	}
 }

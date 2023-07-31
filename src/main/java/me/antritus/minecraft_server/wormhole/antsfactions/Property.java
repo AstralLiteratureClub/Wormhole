@@ -1,5 +1,9 @@
 package me.antritus.minecraft_server.wormhole.antsfactions;
 
+/**
+ * @author Antritus
+ * @since 1.1-SNAPSHOT
+ */
 public class Property<Z, T> {
 	private T value;
 	private final Z name;

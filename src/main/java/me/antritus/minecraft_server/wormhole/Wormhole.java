@@ -10,6 +10,7 @@ import me.antritus.minecraft_server.wormhole.commands.block.CMDBlock;
 import me.antritus.minecraft_server.wormhole.commands.block.CMDToggle;
 import me.antritus.minecraft_server.wormhole.commands.block.CMDUnblock;
 import me.antritus.minecraft_server.wormhole.commands.request.to.CMDAccept;
+import me.antritus.minecraft_server.wormhole.commands.request.to.CMDCancel;
 import me.antritus.minecraft_server.wormhole.commands.request.to.CMDDeny;
 import me.antritus.minecraft_server.wormhole.commands.request.CMDRequests;
 import me.antritus.minecraft_server.wormhole.commands.request.to.CMDTpa;
@@ -60,7 +61,7 @@ public class Wormhole extends FactionsPlugin  {
 		getServer().getPluginManager().registerEvents(userManager, this);
 		CoreCommand.registerCommand(this, "shrug", new CMDShrug(this));
 		CoreCommand.registerCommand(this, "tpa", new CMDTpa(this));
-//		CoreCommand.registerCommand(this, "tpcancel", new CMDCancel());
+		CoreCommand.registerCommand(this, "tpcancel", new CMDCancel(this));
 		CoreCommand.registerCommand(this, "tpaccept", new CMDAccept(this));
 		CoreCommand.registerCommand(this, "tpdeny", new CMDDeny(this));
 		CoreCommand.registerCommand(this, "tptoggle", new CMDToggle(this));
