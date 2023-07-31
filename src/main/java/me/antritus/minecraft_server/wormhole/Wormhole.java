@@ -1,97 +1,174 @@
 package me.antritus.minecraft_server.wormhole;
 
-import me.antritus.minecraft_server.wormhole.astrolminiapi.ColorUtils;
+import me.antritus.minecraft_server.wormhole.antsfactions.*;
+import me.antritus.minecraft_server.wormhole.api.TeleportManager;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.Configuration;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.CoreCommand;
 import me.antritus.minecraft_server.wormhole.commands.admin.CMDReload;
 import me.antritus.minecraft_server.wormhole.commands.block.CMDBlock;
 import me.antritus.minecraft_server.wormhole.commands.block.CMDToggle;
 import me.antritus.minecraft_server.wormhole.commands.block.CMDUnblock;
-import me.antritus.minecraft_server.wormhole.commands.request.CMDAccept;
-import me.antritus.minecraft_server.wormhole.commands.request.CMDDeny;
+import me.antritus.minecraft_server.wormhole.commands.request.to.CMDAccept;
+import me.antritus.minecraft_server.wormhole.commands.request.to.CMDCancel;
+import me.antritus.minecraft_server.wormhole.commands.request.to.CMDDeny;
 import me.antritus.minecraft_server.wormhole.commands.request.CMDRequests;
-import me.antritus.minecraft_server.wormhole.commands.request.CMDTpa;
-import me.antritus.minecraft_server.wormhole.manager.TeleportManager;
-import net.kyori.adventure.text.Component;
+import me.antritus.minecraft_server.wormhole.commands.request.to.CMDTpa;
+import me.antritus.minecraft_server.wormhole.database.UserDatabase;
+import me.antritus.minecraft_server.wormhole.events.WormholeReloadEvent;
+import me.antritus.minecraft_server.wormhole.manager.UserManager;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
+import java.io.IOException;
+import java.util.Objects;
 
 /**
  * @since 1.0.0-snapshot
  * @author antritus
  */
-public class Wormhole extends JavaPlugin {
+public class Wormhole extends FactionsPlugin  {
 	private static Wormhole wormhole;
 	public static boolean DEBUG = true;
-	public static boolean CANCEL_TELEPORT_ON_MOVE = true;
-	public static long REQUEST_TIME = 30000;
-	public static long TELEPORT_TIME;
-	public static Configuration configuration;
-	public static TeleportManager manager;
+	private MessageManager messageManager;
+	private UserDatabase userDatabase;
+	private UserManager userManager;
+	private Configuration commandConfig;
+
+	private TeleportManager teleportManager;
 
 	@Override
-	public void onEnable() {
+	public void enable() {
 		wormhole = this;
-		configuration = new Configuration(this, new File(this.getDataFolder(), "config.yml"));
-		manager = new TeleportManager(this);
-		manager.onEnable();
-		getServer().getPluginManager().registerEvents(manager, this);
-		CoreCommand.registerCommand(this, "tpa", new CMDTpa());
-		CoreCommand.registerCommand(this, "tpaccept", new CMDAccept());
-		CoreCommand.registerCommand(this, "tpdeny", new CMDDeny());
-		CoreCommand.registerCommand(this, "tptoggle", new CMDToggle());
-		CoreCommand.registerCommand(this, "tpblock", new CMDBlock());
-		CoreCommand.registerCommand(this, "tpunblock", new CMDUnblock());
-		CoreCommand.registerCommand(this, "tprequests", new CMDRequests());
-		CoreCommand.registerCommand(this, "tpreload", new CMDReload());
-	}
-	@Override
-	public void onDisable() {
-		manager.onDisable();
-	}
-
-	public static void sendMessage(Player player, Player who, String key){
-		String msg = configuration.getString(key, key);
-		msg = msg.replace("%who%", ColorUtils.deseriazize(who.name()));
-		player.sendMessage(ColorUtils.translateComp(msg));
-	}
-	public static void sendMessage(Player player, Player who, String key, String... replacements){
-		String msg = configuration.getString(key, key);
-		msg = msg.replace("%who%", ColorUtils.deseriazize(who.name()));
-		for (String replacement : replacements) {
-			String[] split = replacement.split("=");
-			msg = msg.replace(split[0], split[1]);
+		enableDatabase();
+		loadCoreSettings();
+		messageManager = new MessageManager(this);
+		commandConfig = new Configuration(this, "commands.yml");
+		try {
+			commandConfig.load();
+		} catch (IOException | InvalidConfigurationException e) {
+			throw new RuntimeException(e);
 		}
-		player.sendMessage(ColorUtils.translateComp(msg));
-	}
-	public static void sendMessage(Player player, String  who, String key){
-		String msg = configuration.getString(key, key);
-		msg = msg.replace("%who%", who);
-		player.sendMessage(ColorUtils.translateComp(msg));
+
+		userDatabase = new UserDatabase(this);
+		userDatabase.checkAndDropTable();
+		teleportManager = new TeleportManager(this);
+		teleportManager.run();
+
+		userManager = new UserManager(this);
+		userManager.onEnable();
+		getServer().getPluginManager().registerEvents(userManager, this);
+		CoreCommand.registerCommand(this, "tpa", new CMDTpa(this));
+		CoreCommand.registerCommand(this, "tpcancel", new CMDCancel(this));
+		CoreCommand.registerCommand(this, "tpaccept", new CMDAccept(this));
+		CoreCommand.registerCommand(this, "tpdeny", new CMDDeny(this));
+		CoreCommand.registerCommand(this, "tptoggle", new CMDToggle(this));
+		CoreCommand.registerCommand(this, "tpblock", new CMDBlock(this));
+		CoreCommand.registerCommand(this, "tpunblock", new CMDUnblock(this));
+		CoreCommand.registerCommand(this, "tprequests", new CMDRequests(this));
+		CoreCommand.registerCommand(this, "tpreload", new CMDReload(this));
+		getLogger().info("Wormhole has started.");
 	}
 
-	public static void sendKey(Player player, String key){
-		String msg = configuration.getString(key, key);
-		player.sendMessage(ColorUtils.translateComp(msg));
+	// this is used when the core (factions plugin) does not disable connection between the database.
+	@Override
+	public void startDisable() {
+		userManager.onEnable();
+		teleportManager.end();
 	}
-	public static void sendMessage(Player player, String msg){
-		Component component = ColorUtils.translateComp(msg);
-		player.sendMessage(component);
+
+	@Override
+	public void disable() {
+		getLogger().info("Wormhole has disabled.");
+	}
+
+	@Override
+	public void updateConfig(@Nullable String oldVersion, String newVersion) { }
+
+
+	public static void sendMessage(Player player, Player who, String key) {
+		wormhole.messageManager.message(player, key, "%player%=" + player.getName(), "%who%=" + who.getName());
+	}
+
+	public static void sendMessage(Player player, Player who, String key, String... replacements) {
+		String[] args = new String[replacements.length + 2];
+		System.arraycopy(replacements, 0, args, 0, replacements.length);
+		args[replacements.length] = "%who%=" + who.getName();
+		args[replacements.length + 1] = "%player%=" + player.getName();
+		wormhole.messageManager.message(player, key, args);
+	}
+
+	public static void sendMessage(Player player, String who, String key) {
+		wormhole.messageManager.message(player, key, "%player%=" + player.getName(), "%who%=" + who);
+	}
+
+	public static void sendMessage(Player player, String who, String key, String... replacements) {
+		String[] args = new String[replacements.length + 2];
+		System.arraycopy(replacements, 0, args, 0, replacements.length);
+		args[replacements.length] = "%who%=" + who;
+		args[replacements.length + 1] = "%player%=" + player.getName();
+		wormhole.messageManager.message(player, key, args);
+	}
+
+
+	public MessageManager getMessageManager() {
+		return messageManager;
 	}
 
 	public static void reload(){
-		if (manager != null){
-			manager.onDisable();
-		}
-		configuration = new Configuration(wormhole, new File(wormhole.getDataFolder(), "config.yml"));
-		manager = new TeleportManager(wormhole);
-		manager.onEnable();
+		WormholeReloadEvent event = new WormholeReloadEvent(wormhole);
+		event.callEvent();
 
-		DEBUG = configuration.getBoolean("debug", false);
-		REQUEST_TIME = configuration.getLong("settings.tpatime", 30000);
-		CANCEL_TELEPORT_ON_MOVE = configuration.getBoolean("settings.cancel-teleport-on-movement", false);
-		TELEPORT_TIME = configuration.getLong("settings.teleport-time", 3000);
+		wormhole.reloadConfig();
+
+		wormhole.userDatabase = new UserDatabase(wormhole);
+
+		if (wormhole.userManager != null){
+			wormhole.userManager.onDisable();
+		} else {
+			wormhole.teleportManager = new TeleportManager(wormhole);
+		}
+		wormhole.messageManager = new MessageManager(wormhole);
+		wormhole.userManager = new UserManager(wormhole);
+		wormhole.userManager.onEnable();
+
+		DEBUG = (boolean) Objects.requireNonNullElse(Objects.requireNonNull(wormhole.getCoreSettings().get("debug")).getValue(), false);
+		wormhole.loadCoreSettings();
+ 	}
+
+	private void loadCoreSettings() {
+		CoreSettings coreSettings = getCoreSettings();
+		Configuration configuration = getConfig();
+		configuration.setIfNull("debug", false);
+		coreSettings.load(new SimpleProperty<>("debug", configuration.getBoolean("debug", false)));
+		configuration.setIfNull("request-time", "30s");
+		coreSettings.load(new SimpleProperty<>("request-time", TimeFormatter.formatTime(configuration.getString("request-time", "30s")).toMillis()));
+		configuration.setIfNull("teleport-time", "0s");
+		coreSettings.load(new SimpleProperty<>("teleport-time", TimeFormatter.formatTime(configuration.getString("teleport-time", "0s")).toMillis()));
+		configuration.setIfNull("cancel-on-movement", false);
+		coreSettings.load(new SimpleProperty<>("cancel-on-movement", configuration.getBoolean("cancel-on-movement", false)));
+		configuration.setIfNull("max-movement-distance", 0.5D);
+		coreSettings.load(new SimpleProperty<>("max-movement-distance", configuration.getDouble("max-movement-distance", 0.5D)));
+
+		try {
+			configuration.save();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public UserDatabase getUserDatabase() {
+		return userDatabase;
+	}
+
+	public Configuration getCommandConfig() {
+		return commandConfig;
+	}
+
+	public TeleportManager getTeleportManager() {
+		return teleportManager;
+	}
+	public UserManager getUserManager(){
+		return userManager;
 	}
 }

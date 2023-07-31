@@ -1,13 +1,14 @@
 package me.antritus.minecraft_server.wormhole.events.request;
 
-import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
+import me.antritus.minecraft_server.wormhole.Wormhole;
 import me.antritus.minecraft_server.wormhole.events.TpAbstractEvent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * This event is right before sending teleport request to requested
+ * This event is right before sending teleport request to request
  * @author antritus
  * @since 1.0.0-snapshot
  */
@@ -23,14 +24,14 @@ public class TpRequestSendEvent extends TpAbstractEvent implements Cancellable {
 	 * @param requested requested
 	 * @param requestTime how long is the request
 	 */
-	public TpRequestSendEvent(@NotNull Player who, @NotNull Player requested, long requestTime) {
-		super(who, requested);
+	public TpRequestSendEvent(@NotNull Wormhole wormhole, @NotNull Player who, @NotNull Player requested, long requestTime) {
+		super(wormhole, who, requested);
 		this.requested = requested;
 		this.requestTime = requestTime;
 	}
 
 	/**
-	 * Returns who was requested
+	 * Returns who were requested
 	 * @return NotNull requested player
 	 */
 	@NotNull

@@ -1,0 +1,101 @@
+placeholders:
+  - name: prefix
+    text: "<dark_gray>[<light_purple>Wormhole</light_purple>]</dark_gray>"
+  - name: break
+    text: "<dark_aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-<aqua>-</aqua>-"
+  - name: usage
+    text: "<red>Wrong Usage!</red>"
+
+command-parse:
+  incorrect-format: "%prefix% %usage% <click:suggest_command:/%command%><hover:show_text:'<green>Click here to suggest the correct format!'><gray>/%command%</gray></hover>"
+  player-only: "%prefix% <red>You cannot execute <white>%command%.</white>"
+  console-only: "%prefix% <red>You cannot execute <white>%command%.</white>"
+  no-tab:
+    player: "< No players found >"
+time-ran-out:
+  to:
+    player: "%prefix% <red>Your teleport request to <white>%who%</white> has ran out."
+    requested: "%prefix% <red>You did not accept teleport request of <white>%who%</white>."
+  here:
+    player: Unused
+    requested: Unused
+teleporting:
+  to:
+    player-left: "%prefix% <red><white>%who%</white> has left the server while teleporting."
+    to-left: "%prefix% <red><white>%who%</white> has left the server while teleporting."
+    player-moved: "%prefix% <red>You moved! No longer teleporting to <gray>%who%</gray>"
+    to-moved: "%prefix% <red><gray>%who%</gray> moved! Their teleportation is canceled."
+    second: "%prefix% <green>Teleporting to <white>%who%</white> in <white>%seconds%</white>."
+    final: "%prefix% <green>Teleporting to <white>%who%</white>"
+  from:
+    second: "%prefix% <green>Teleporting to <white>%who%</white> in <white>%seconds%</white>."
+request:
+  unknown-player: "%prefix% <red>Unknown player! <gray>%who%</gray> is offline or has not played before."
+  self: "%prefix% <red>You cannot request yourself to teleport."
+  blocked: "%prefix% <red><gray>%who%</white> has blocked your teleport requests."
+  disabled: "%prefix% <red><gray>%who%</white> is not accepting teleport requests."
+  duplicate: "%prefix% <red>You have already sent request to <gray>%who%</gray>."
+  sent-sender: "%prefix% <green>Sent invite to <white>%who%</white> <click:run_command:/%command%><hover:show_text:'<green>Click to execute: <white>/%command%</white>'><red><bold>CANCEL</hover></click>"
+  sent-requested: "%prefix% <green><white>%who%</white> has requested to teleport to you. <click:run_command:/%command-accept%><hover:show_text:'<green>Click to execute: <white>/%command-accept%</white>'><green><bold>ACCEPT</hover></click> <click:run_command:/%command-deny%><hover:show_text:'<green>Click to execute: <white>/%command-deny%</white>'><red><bold>DENY</hover></click>"
+block:
+  unknown-player: "%prefix% <red>Unknown player! <gray>%who%</gray> is offline or has not played ever."
+  already: "%prefix% <gray>%who%</gray><red> has been already blocked."
+  blocked: "%prefix% <white>%who%</white><green> has been <red><bold>blocked</bold></red> from sending teleport requests."
+unblock:
+  unknown-player: "%prefix% <red>Unknown player! <gray>%who%</gray> is offline of has not played ever."
+  already: "%prefix% <gray>%who%</gray><red> is not blocked."
+  unblocked: "%prefix% <white>%who%</white><green> has been <bold>unblocked</bold> from sending teleport requests."
+toggle:
+  true: "%prefix% <green>You will <red>no longer</red> accept new requests from anyone. <click:run_command:/%command%>"
+  false: "%prefix% <green>You will <red>no longer</red> accept new requests from unblocked players."
+
+accept:
+  no-requests: "%prefix% <red>You do not have any pending received out requests."
+  latest:
+    sender-null: "%prefix% <red>You have no pending teleport requests."
+  manual:
+    unknown-player: "%prefix% <red>Unknown player! <gray>%who%</gray> is offline or has not played before."
+    self: "%prefix% <red>You cannot accept your own teleport request."
+    no-request: "%prefix% <red>You do not have a teleport request from <white>%who%</white>."
+  accept-sender: "%prefix% <green>Teleporting to <gray>%who%</gray>- soon."
+  accept-requested: "%prefix% <green>Accepted teleport request of <gray>%who%</gray>."
+deny:
+  no-requests: "%prefix% <red>You do not have any pending received out requests."
+  latest:
+    no-requests: "%prefix% <red>You have no pending teleport requests."
+    sender-null: "%prefix% <red>You have no pending teleport requests."
+  manual:
+    unknown-player: "%prefix% <red>Unknown player! <gray>%who%</gray> is offline or has not played before."
+    self: "%prefix% <red>You cannot deny your own teleport request."
+    no-request: "%prefix% <red>You do not have a teleport request from <white>%who%</white>."
+  deny-requested: "%prefix% <green>Denied the teleport request of <gray>%who%</gray>"
+  deny-sender: "%prefix% <green><gray>%who%</gray> has been denied your teleport request."
+cancel:
+  no-requests: "%prefix% <red>You do not have any pending sent out requests."
+  latest:
+    no-requests: "%prefix% <red>You have no pending teleport requests."
+    sender-null: "%prefix% <red>You have no pending teleport requests."
+  manual:
+    unknown-player: "%prefix% <red>Unknown player! <gray>%who%</gray> is offline or has not played before."
+    self: "%prefix% <red>You cannot cancel your own teleport requests."
+    no-request: "%prefix% <red>You do not have a teleport request from <white>%who%</white>."
+  cancel-sender: "%prefix% <green>Canceled request to <gray>%who%</gray>"
+  cancel-requested: "%prefix% <green><gray>%who%</gray> has canceled their teleport request."
+
+requests:
+  others:
+    no-perm: "%prefix% <red>You cannot check requests of other users."
+  format-other:
+    - "%prefix% <green>Teleport requests of <white>%who%</white>"
+    - "%prefix% <green>Latest: <white>%latest%"
+    - "%prefix% <green>Sent: <white>%sent%"
+    - "%prefix% <green>Received: <white>%received%"
+  format-player:
+    - "%prefix% <green>Your teleport requests.."
+    - "%prefix% <green>Latest: <white>%latest%"
+    - "%prefix% <green>Sent: <white>%sent%"
+    - "%prefix% <green>Received: <white>%received%"
+
+reload:
+  reloading: "%prefix% <green>Reload started..."
+  reloaded: "%prefix% <green>Reloaded!"

@@ -1,15 +1,16 @@
 package me.antritus.minecraft_server.wormhole.commands.block;
 
 import me.antritus.minecraft_server.wormhole.Wormhole;
-import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
+import me.antritus.minecraft_server.wormhole.antsfactions.MessageManager;
+import me.antritus.minecraft_server.wormhole.astrolminiapi.ColorUtils;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.CoreCommand;
 import me.antritus.minecraft_server.wormhole.events.PlayerTabCompleteRequestEvent;
 import me.antritus.minecraft_server.wormhole.events.TpPlayerAfterParseEvent;
-import me.antritus.minecraft_server.wormhole.events.TpRequestEventFactory;
 import me.antritus.minecraft_server.wormhole.manager.User;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,63 +21,61 @@ import java.util.List;
  * @author antritus
  */
 public class CMDUnblock extends CoreCommand {
-	public CMDUnblock() {
-		super("tpunblock", Wormhole.configuration.getLong("commands.tpunblock.cooldown", 0));
+	public CMDUnblock(Wormhole wormhole){
+		super(wormhole, "tpunblock");
 		setPermission("wormhole.unblock");
-		setDescription(Wormhole.configuration.getString("commands.tpunblock.description", "commands.tpunblock.description"));
-		setUsage(Wormhole.configuration.getString("commands.tpunblock.usage", "commands.tpunblock.usage"));
-		setAliases(Wormhole.configuration.getStringList("commands.tpunblock.aliases"));
+		setDescription(wormhole.getCommandConfig().getString("tpunblock.description", "tpunblock.description"));
+		setUsage(wormhole.getConfig().getString("tpunblock.usage", "tpunblock.usage"));
+		setAliases(wormhole.getConfig().getStringList("tpunblock.aliases"));
 	}
-
 	@Override
-	public boolean execute(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] args) {
-		if (!(commandSender instanceof Player player)) {
-			playerOnly();
+	public boolean execute(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] args){
+		MessageManager messageManager = wormhole.getMessageManager();
+		if (!(commandSender instanceof Player player)){
+			messageManager.message(commandSender, "command-parse.player-only");
 			return true;
 		}
-		if (args.length == 0) {
-			sendMessage(player, Wormhole.configuration.getString("commands.tpunblock.incorrect-format", "commands.tpunblock.incorrect-format"));
+		if (args.length == 0){
+			messageManager.message(player, "command-parse.incorrect-format", "%command%=tpunblock <player>");
 			return true;
 		}
-		User user = Wormhole.manager.getUser(player);
+		User user = wormhole.getUserDatabase().get(player);
 		if (user == null) {
 			throw new RuntimeException("Could not get user of: " + player.getName());
 		}
 		Player other = Bukkit.getPlayer(args[0]);
-		if (other == null) {
-			sendMessage(player, Wormhole.configuration.getString("commands.tpunblock.unknown-player", "commands.tpunblock.unknown-player"));
+		if (other == null){
+			Wormhole.sendMessage(player, args[0], "unblock.unknown-player", "%command%=tpunblock <player>");
 			return true;
 		}
-		TpPlayerAfterParseEvent parseEvent = TpRequestEventFactory.createSendPrepareEvent("tpunblock", player, other);
-		TpRequestEventFactory.trigger(parseEvent);
-		if (parseEvent.isCancelled()) {
+		TpPlayerAfterParseEvent parseEvent = new TpPlayerAfterParseEvent(wormhole, "tpunblock", player, other);
+		parseEvent.callEvent();
+		if (parseEvent.isCancelled()){
 			return true;
 		}
-		if (user.isBlocked(other)) {
-			sendMessage(player, Wormhole.configuration.getString("commands.tpunblock.already-unblocked", "commands.tpunblock.already-unblocked"));
+		if (!user.isBlocked(other)){
+			Wormhole.sendMessage(player, other, "unblock.already", "%command%=tpunblock <player>");
 			return true;
 		}
 
-		user.block(other, false);
-		sendMessage(player, Wormhole.configuration.getString("commands.tpunblock.unblocked", "commands.tpunblock.unblocked"));
+		user.unblock(other);
+		Wormhole.sendMessage(player, other, "unblock.unblocked");
 		return true;
 	}
-
-	@Override
 	public @NotNull List<String> tabComplete(@NotNull CommandSender commandSender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
 		if (args.length == 1) {
 			Player sender = (Player) commandSender;
 			List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
 			players.remove(sender);
-			players.removeIf(player -> Wormhole.manager.getUser(sender).isBlocked(player));
-			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent("tpblock", sender, players);
+			players.removeIf(player -> wormhole.getUserDatabase().getKnownNonNull(sender).isBlocked(player));
+			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent(wormhole, "tpunblock", sender, players);
 			Bukkit.getServer().getPluginManager().callEvent(e);
 			List<String> finalList = new ArrayList<>();
 			for (Player player : players) {
 				finalList.add(player.getName());
 			}
 			if (finalList.isEmpty()) {
-				finalList.add(Wormhole.configuration.getString("settings.no-player-tab-completion", "settings.no-player-tab-completion"));
+				finalList.add(wormhole.getMessageManager().messageConfig.getString(ColorUtils.translate("command-parse.no-tab.player"), "command-parse.no-tab.player"));
 			}
 			finalList.add("-list");
 			return finalList;

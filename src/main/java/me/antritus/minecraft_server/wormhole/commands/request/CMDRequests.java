@@ -1,17 +1,17 @@
 package me.antritus.minecraft_server.wormhole.commands.request;
 
 import me.antritus.minecraft_server.wormhole.Wormhole;
-import me.antritus.minecraft_server.wormhole.astrolminiapi.ColorUtils;
-import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
+import me.antritus.minecraft_server.wormhole.antsfactions.MessageManager;
+import me.antritus.minecraft_server.wormhole.api.Request;
+import me.antritus.minecraft_server.wormhole.api.TeleportManager;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.CoreCommand;
 import me.antritus.minecraft_server.wormhole.events.PlayerTabCompleteRequestEvent;
-import me.antritus.minecraft_server.wormhole.events.TpRequestEventFactory;
 import me.antritus.minecraft_server.wormhole.events.TpPlayerAfterParseEvent;
-import me.antritus.minecraft_server.wormhole.manager.TeleportRequest;
 import me.antritus.minecraft_server.wormhole.manager.User;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,26 +22,27 @@ import java.util.List;
  * @author antritus, lunarate
  */
 public class CMDRequests extends CoreCommand {
-	public CMDRequests(){
-		super("tprequests", Wormhole.configuration.getLong("commands.tprequests.cooldown", 0));
+	public CMDRequests(Wormhole wormhole){
+		super(wormhole, "tprequests");
 		setPermission("wormhole.requests");
-		setDescription(Wormhole.configuration.getString("commands.tprequests.description", "commands.tprequests.description"));
-		setUsage(Wormhole.configuration.getString("commands.tprequests.usage", "commands.tprequest.usage"));
-		setAliases(Wormhole.configuration.getStringList("commands.tprequests.aliases"));
+		setDescription(wormhole.getCommandConfig().getString("tprequests.description", "tprequests.description"));
+		setUsage(wormhole.getConfig().getString("tprequests.usage", "tprequests.usage"));
+		setAliases(wormhole.getConfig().getStringList("tprequests.aliases"));
 	}
 	@Override
 	public boolean execute(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] args){
+		MessageManager messageManager = wormhole.getMessageManager();
 		if (!(commandSender instanceof Player player)){
-			playerOnly();
+			messageManager.message(commandSender, "command-parse.player-only");
 			return true;
 		}
-		User user = Wormhole.manager.getUser(player);
+		User user = wormhole.getUserDatabase().get(player);
 		Player other = null;
 		if (args.length > 0){
 			other = Bukkit.getPlayer(args[0]);
 			if (other == null){
 				if (!player.hasPermission("wormhole.requests.others")){
-					player.sendMessage(ColorUtils.translateComp(Wormhole.configuration.getString("commands.tprequests.no-perms-check")));
+					messageManager.message(player, "requests.others.no-perm");
 					return true;
 				}
 				return true;
@@ -50,12 +51,12 @@ public class CMDRequests extends CoreCommand {
 				Wormhole.sendMessage(player, other, "commands.tprequests.no-perms-check-others");
 				return true;
 			}
-			TpPlayerAfterParseEvent parseEvent = TpRequestEventFactory.createSendPrepareEvent("tprequests", player, other);
-			TpRequestEventFactory.trigger(parseEvent);
+			TpPlayerAfterParseEvent parseEvent = new TpPlayerAfterParseEvent(wormhole, "tprequests", player, other);
+			parseEvent.callEvent();
 			if (parseEvent.isCancelled()){
 				return true;
 			}
-			user = Wormhole.manager.getUser(other);
+			user = wormhole.getUserDatabase().get(other);
 			if (user == null){
 				throw new RuntimeException("Could not get user of: "+ other.getName());
 			}
@@ -63,23 +64,20 @@ public class CMDRequests extends CoreCommand {
 		if (user == null){
 			throw new RuntimeException("Could not get user of: "+ player.getName());
 		}
+		TeleportManager manager = wormhole.getTeleportManager();
 		StringBuilder sent = new StringBuilder();
 		StringBuilder requested = new StringBuilder();
-		for (TeleportRequest request : user.requests()) {
-			if (request.isValid()){
-				if (sent.length() != 0){
-					sent.append(", ");
-				}
-				sent.append(Bukkit.getPlayer(request.getRequested()).getName());
+		for (Request request : manager.getAllRequests(player).values()) {
+			if (sent.length() != 0) {
+				sent.append(", ");
 			}
+			sent.append(Bukkit.getPlayer(request.getRequested()).getName());
 		}
-		for (TeleportRequest request : user.others()) {
-			if (request.isValid()){
-				if (requested.length() != 0){
-					requested.append(", ");
-				}
-				requested.append(Bukkit.getPlayer(request.getWhoRequested()).getName());
+		for (Request request : manager.getAllReceivedRequests(player).values()) {
+			if (requested.length() != 0) {
+				requested.append(", ");
 			}
+			requested.append(Bukkit.getPlayer(request.getWhoAsked()).getName());
 		}
 		if (sent.isEmpty()){
 			sent.append("None");
@@ -87,13 +85,15 @@ public class CMDRequests extends CoreCommand {
 		if (requested.isEmpty()){
 			requested.append("None");
 		}
-		String msgFormat = Wormhole.configuration.getString("commands.tprequests.format-self", "commands.tprequests.format-self").replace("%sent%", sent.toString()).replace("%received%", requested.toString());
 		if (other != null){
-			msgFormat = Wormhole.configuration.getString("commands.tprequests.format-other", "commands.tprequests.format-other").replace("%sent%", sent.toString()).replace("%received%", requested.toString()).replace("%who%", other.getName());
+			Wormhole.sendMessage(player, other.getName(), "requests.format-other", "%received%="+requested,
+					"%sent%="+sent,
+					"%latest%="+(user.getLatestRequest() != null ? Bukkit.getPlayer(user.getLatestRequest().getWhoAsked()) : "None"));
+		} else {
+			messageManager.message(player, "requests.format-self", "%received%="+requested,
+					"%sent%="+sent,
+					"%latest%="+(user.getLatestRequest() != null ? Bukkit.getPlayer(user.getLatestRequest().getWhoAsked()) : "None"));
 		}
-		msgFormat = msgFormat.replace("%latest%", user.latestRequest != null ? Bukkit.getPlayer(user.latestRequest.getWhoRequested()).getName() : "None");
-		commandSender.sendMessage(ColorUtils.translateComp(msgFormat));
-		cooldowns.put(player.getUniqueId(), System.currentTimeMillis()+super.cooldown);
 		return true;
 	}
 
@@ -105,7 +105,7 @@ public class CMDRequests extends CoreCommand {
 				return Collections.singletonList("");
 			}
 			List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
-			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent("tprequests", sender, players);
+			PlayerTabCompleteRequestEvent e = new PlayerTabCompleteRequestEvent(wormhole,"tprequests", sender, players);
 			Bukkit.getServer().getPluginManager().callEvent(e);
 			List<String> finalList = new ArrayList<>();
 			for (Player player : players) {

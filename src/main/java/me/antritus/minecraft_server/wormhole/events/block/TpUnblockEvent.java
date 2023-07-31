@@ -1,6 +1,8 @@
 package me.antritus.minecraft_server.wormhole.events.block;
 
+import me.antritus.minecraft_server.wormhole.Wormhole;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Antritus
@@ -9,9 +11,9 @@ import org.bukkit.entity.Player;
 public class TpUnblockEvent extends TpBlockEvent{
 	/**
 	 * @param who       who requested
-	 * @param requested requested player
+	 * @param unblocked requested player
 	 */
-	public TpUnblockEvent(Player who, Player requested) {
-		super(who, requested);
+	public TpUnblockEvent(@NotNull Wormhole wormhole, @NotNull Player who, @NotNull Player unblocked) {
+		super(wormhole, who, unblocked);
 	}
 }

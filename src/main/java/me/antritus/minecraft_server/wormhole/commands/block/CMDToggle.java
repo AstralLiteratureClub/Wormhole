@@ -1,12 +1,14 @@
 package me.antritus.minecraft_server.wormhole.commands.block;
 
 import me.antritus.minecraft_server.wormhole.Wormhole;
+import me.antritus.minecraft_server.wormhole.antsfactions.MessageManager;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.ColorUtils;
-import me.antritus.minecraft_server.wormhole.astrolminiapi.NotNull;
 import me.antritus.minecraft_server.wormhole.astrolminiapi.CoreCommand;
+import me.antritus.minecraft_server.wormhole.events.block.TpToggleEvent;
 import me.antritus.minecraft_server.wormhole.manager.User;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,31 +19,29 @@ import java.util.List;
  */
 public class CMDToggle extends CoreCommand {
 
-	public CMDToggle() {
-		super("tptoggle", Wormhole.configuration.getLong("commands.tptoggle.cooldown", 0));
+	public CMDToggle(Wormhole wormhole) {
+		super(wormhole, "tptoggle");
 		setPermission("wormhole.toggle");
-		setDescription(Wormhole.configuration.getString("commands.tptoggle.description", "commands.tptoggle.description"));
-		setUsage(Wormhole.configuration.getString("commands.tptoggle.usage", "commands.tptoggle.usage"));
-		setAliases(Wormhole.configuration.getStringList("commands.tptoggle.aliases"));
+		setDescription(wormhole.getCommandConfig().getString("tptoggle.description", "tptoggle.description"));
+		setUsage(wormhole.getConfig().getString("tptoggle.usage", "tptoggle.usage"));
+		setAliases(wormhole.getConfig().getStringList("tptoggle.aliases"));
 	}
 
 	@Override
 	public boolean execute(@NotNull CommandSender commandSender, @NotNull String s, @NotNull String[] args) {
+		MessageManager messageManager = wormhole.getMessageManager();
 		if (!(commandSender instanceof Player player)){
-			playerOnly();
+			messageManager.message(commandSender, "command-parse.player-only");
 			return true;
 		}
-		User user = Wormhole.manager.getUser(player);
+		User user = wormhole.getUserDatabase().get(player);
 		if (user == null){
 			throw new RuntimeException("Could not get user of: "+ player.getName());
 		}
-		user.acceptingRequests = !user.acceptingRequests;
-		if (user.acceptingRequests) {
-			player.sendMessage(ColorUtils.translateComp(Wormhole.configuration.getString("commands.tptoggle.toggled-off", "commands.tptoggle.toggled-off")));
-		} else {
-			player.sendMessage(ColorUtils.translateComp(Wormhole.configuration.getString("commands.tptoggle.toggled-on", "commands.tptoggle.toggled-on")));
-		}
-		cooldowns.put(player.getUniqueId(), System.currentTimeMillis()+super.cooldown);
+		TpToggleEvent event = new TpToggleEvent(wormhole, player);
+		event.callEvent();
+		user.isAcceptingRequests = !user.isAcceptingRequests;
+		messageManager.message(player, "toggle."+user.isAcceptingRequests, "%command%=tptoggle");
 		return true;
 	}
 
