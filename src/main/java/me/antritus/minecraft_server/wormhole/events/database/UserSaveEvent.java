@@ -15,6 +15,9 @@ public class UserSaveEvent extends UserEvent {
 	public UserSaveEvent(@NotNull Wormhole wormhole, @NotNull User user) {
 		super(wormhole, user);
 	}
+	public UserSaveEvent(boolean async, @NotNull Wormhole wormhole, @NotNull User user) {
+		super(async, wormhole, user);
+	}
 
 	public static HandlerList getHandlerList(){
 		return HANDLER_LIST;

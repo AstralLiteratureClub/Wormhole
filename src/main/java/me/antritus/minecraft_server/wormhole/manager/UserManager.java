@@ -39,20 +39,15 @@ public class UserManager implements Listener {
 				});
 			}
 			// 30 minutes = 20 * 60 * 30 = 36_000
-		}.runTaskTimerAsynchronously(main, 500, 36_000);
+		}.runTaskTimerAsynchronously(main, 1000, 30*60*20);
 	}
 	public void onDisable() {
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				Bukkit.getOnlinePlayers().forEach(player->{
-					User user = main.getUserDatabase().getKnownNonNull(player);
-					user.lastOnline = System.currentTimeMillis();
-					user.online = false;
-					main.getUserDatabase().save(user);
-				});
-			}
-		}.runTaskAsynchronously(main);
+		Bukkit.getOnlinePlayers().forEach(player -> {
+			User user = main.getUserDatabase().getKnownNonNull(player);
+			user.lastOnline = System.currentTimeMillis();
+			user.online = false;
+		});
+		main.getUserDatabase().disable();
 		task.cancel();
 	}
 

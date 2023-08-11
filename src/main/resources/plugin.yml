@@ -1,6 +1,6 @@
 name: Wormhole
 prefix: Wormhole
-version: 1.1-SNAPSHOT
+version: 1.2
 api-version: '1.20'
 description: A teleport request and deny plugin made for spigot/paper servers.
 author: Antritus

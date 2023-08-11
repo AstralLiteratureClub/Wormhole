@@ -15,6 +15,7 @@ import me.antritus.minecraft_server.wormhole.commands.request.CMDRequests;
 import me.antritus.minecraft_server.wormhole.commands.request.to.CMDTpa;
 import me.antritus.minecraft_server.wormhole.database.UserDatabase;
 import me.antritus.minecraft_server.wormhole.events.WormholeReloadEvent;
+import me.antritus.minecraft_server.wormhole.events.request.TpRequestSendEvent;
 import me.antritus.minecraft_server.wormhole.manager.UserManager;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
@@ -57,6 +58,7 @@ public class Wormhole extends FactionsPlugin  {
 
 		userManager = new UserManager(this);
 		userManager.onEnable();
+		TpRequestSendEvent event;
 		getServer().getPluginManager().registerEvents(userManager, this);
 		CoreCommand.registerCommand(this, "tpa", new CMDTpa(this));
 		CoreCommand.registerCommand(this, "tpcancel", new CMDCancel(this));
@@ -73,7 +75,7 @@ public class Wormhole extends FactionsPlugin  {
 	// this is used when the core (factions plugin) does not disable connection between the database.
 	@Override
 	public void startDisable() {
-		userManager.onEnable();
+		userManager.onDisable();
 		teleportManager.end();
 	}
 

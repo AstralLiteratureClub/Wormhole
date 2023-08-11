@@ -3,9 +3,9 @@
 deleted-all-data: false
 
 # Don't edit
-version: 1.0.0
+version: 1.2
 # Debug mode enables teleporting to self
-debug: true
+debug: false
 
 # request-time = 1000 millis = 1 sec
 request-time: 30s

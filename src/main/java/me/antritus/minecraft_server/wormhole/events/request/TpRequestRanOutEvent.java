@@ -4,7 +4,6 @@ import me.antritus.minecraft_server.wormhole.Wormhole;
 import me.antritus.minecraft_server.wormhole.api.Request;
 import me.antritus.minecraft_server.wormhole.events.TpAbstractOfflineEvent;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 

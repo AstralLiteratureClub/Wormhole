@@ -18,6 +18,11 @@ tpblock:
   description: "Allows player to unblock teleport requests of given player."
   usage: "/tpblock <online player>"
   aliases: []
+tpblocked:
+  cooldown: 0
+  description: "Allows player to see their blocked players."
+  usage: "/tpblocked"
+  aliases: []
 tpunblock:
   cooldown: 0
   description: "Allows player to unblock teleport requests of given player."
@@ -39,4 +44,10 @@ tpreload:
   cooldown: 0
   description: "Allows reloading of the plugin configuration."
   usage: "/tprequest"
+  aliases: []
+
+tpreset:
+  cooldown: 0
+  description: "Allows player to reset other players teleport requests."
+  usage: "/tpreset <online player>"
   aliases: []

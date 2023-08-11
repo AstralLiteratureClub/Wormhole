@@ -19,7 +19,10 @@ public abstract class UserEvent extends WormholeEvent {
 		super(true, wormhole);
 		this.user = user;
 	}
-
+	public UserEvent(boolean async, @NotNull Wormhole wormhole, @NotNull User user){
+		super(async, wormhole);
+		this.user = user;
+	}
 	@NotNull
 	public User getFaction() {
 		return user;

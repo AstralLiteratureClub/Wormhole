@@ -257,4 +257,33 @@ public class UserDatabase implements Listener {
 	public void unload(Player player) {
 		cached.remove(player.getUniqueId());
 	}
+
+	public void disable() {
+		main.getServer().getOnlinePlayers().forEach(player->{
+			User user = get(player);
+			UserSaveEvent event = new UserSaveEvent(false, main, user);
+			event.callEvent();
+			Connection connection = main.getCoreDatabase().getConnection();
+			Property<String, ?> property = user.get("isNew");
+			if (property == null || !((Boolean) property.getValue())) {
+				try (PreparedStatement statement = connection.prepareStatement(UPDATE_QUERY_USER)) {
+					statement.setBoolean(1, user.isAcceptingRequests);
+					statement.setString(2, toJSON(user));
+					statement.setString(3, user.getUniqueId().toString());
+					statement.executeUpdate();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			} else {
+				try (PreparedStatement statement = connection.prepareStatement(INSERT_QUERY_USER)) {
+					statement.setString(1, user.getUniqueId().toString());
+					statement.setBoolean(2, user.isAcceptingRequests);
+					statement.setString(3, toJSON(user));
+					statement.executeUpdate();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 }

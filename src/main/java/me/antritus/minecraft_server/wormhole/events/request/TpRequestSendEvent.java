@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class TpRequestSendEvent extends TpAbstractEvent implements Cancellable {
 
-	private static HandlerList HANDLERS = new HandlerList();
+	private static final HandlerList HANDLERS = new HandlerList();
 	private final Player requested;
 	private final long requestTime;
 	private boolean isCancelled;
